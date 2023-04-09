@@ -1,0 +1,130 @@
+.border{border:1px solid red !important;}
+.myICONfont{font-size:18px !important;}
+}
+.my_header {
+    border-bottom: solid 1px #d8e2e7 !important;
+    background: #0877a8 !important;
+    color: #fff !important;
+}
+.box-header.with-border{ border-bottom: solid 1px #d8e2e7 !important;
+    background: #0877a8 !important;
+    color: #fff !important;}
+.main-header {min-height: 66px !important; }
+.main-header>.navbar{margin-top:12px !important;}
+.content{min-height: 250px;padding: 15px;margin-right: auto;margin-left: auto;padding-left: 30px;
+    padding-right: 30px; margin-top: 36px;}
+.sidebar-menu {margin-top: 31px !important;}
+.sidebar-menu>li { border-bottom: 1px solid #ddd !important;}
+.skin-blue .main-header .navbar {
+    /* background-color: #32297b; */
+    background-color: #39297b1f;
+}
+/* .dashboard_text{background-color:#0877a8;} */
+.skew{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #256fae52;
+    /* background: url(../../images/dot3.png) repeat; */
+    webkit-transform: skew(-40deg) translateX(14px);
+    -ms-transform: skew(-40deg) translateX(14px);
+    transform: skew(-40deg) translateX(14px);
+    position: absolute;
+    z-index: 1;
+    left: -1200px;
+}
+.skew2 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #236edf63;
+    webkit-transform: skew(-40deg) translateX(14px);
+    -ms-transform: skew(-40deg) translateX(14px);
+    transform: skew(-40deg) translateX(14px);
+    position: absolute;
+    z-index: 1;
+    left: -232px;
+}
+.skew_right {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #ffa500ad;
+    webkit-transform: skew(-40deg) translateX(14px);
+    -ms-transform: skew(-40deg) translateX(14px);
+    transform: skew(-40deg) translateX(14px);
+    position: absolute;
+    z-index: 1;
+    left: 1305px;
+}
+.main-header{
+    background-color: #32297b !important;
+    border-bottom: 4px solid orange;
+    /* background:url(../../images/header.jpg) no-repeat;
+    background-size:cover; */
+}
+.main-header .logo {min-height: 70px !important;border-bottom: 4px solid orange;}
+.main-header .sidebar-session{
+    float: left;
+    background-color: transparent;
+    background-image: none;
+    padding: 6px 0px 10px 35px;
+    overflow: hidden;
+    width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #fff;
+    font-size: 20px;
+    /* font-weight: bold; */
+    letter-spacing: 1px;
+    font-family: 'Roboto-Bold';
+    font-family: Monotype Corsiva;
+    font-size: 27px;
+    text-align: center;
+}
+.main-header .sidebar-toggle {
+    padding: 12px 20px;
+    font-size: 18px;
+}
+.main-header {
+    max-height: 70px !important;
+}
+.skin-blue .wrapper, .skin-blue .main-sidebar, .skin-blue .left-side {
+    background-color: #fff !important;
+    box-shadow: 5px 4px 4px 1px #00000014 !important;}
+.fixed .main-header {  box-shadow: 2px 4px 5px 3px #00000021; }
+table.dataTable thead .sorting, table.dataTable thead .sorting_asc, table.dataTable thead .sorting_desc, table.dataTable thead .sorting_asc_disabled, table.dataTable thead .sorting_desc_disabled {
+    background: #dff0ff !important;
+}
+table.dataTable thead>tr>th.sorting_asc, table.dataTable thead>tr>th.sorting_desc, table.dataTable thead>tr>th.sorting, table.dataTable thead>tr>td.sorting_asc, table.dataTable thead>tr>td.sorting_desc, table.dataTable thead>tr>td.sorting {
+    padding-right: 0px !important;
+}
+.table-bordered > thead > tr > th, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
+    border: 1px solid #e8e4e4 !important;
+    padding-left: 10px;
+}
+.btn-group-sm>.btn, .btn-sm {
+    padding: 3px 10px !important;
+}
+.btn-info {
+    padding: 3px 10px !important;
+}
+.dataTables_wrapper {
+    margin: 12px !important;
+}
+.div.dataTables_wrapper div.dataTables_filter input {
+    border: 1px solid #ddd !important;
+    padding: 15px !important;
+    width: 180px !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    font-size: 12px !important; min-width: 2.5em !important; padding: 2px 8px !important;
+}
+.dataTables_wrapper .dataTables_info {
+    font-size: 12px !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    color: #fff !important;
+    border: 0px solid #ddd;
+    background-color: rgb(91, 178, 252) !important;
+}
