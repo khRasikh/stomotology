@@ -1156,6 +1156,12 @@ class Patient_model extends CI_Model
         $query = $this->db->select('lab_config.*')->get('lab_config');
         return $query->result_array();
     }
+    public function getYears()
+    {
+        $query = $this->db->select('year')->group_by('year')->get('lab_lab');
+        return $query->result_array();
+    }
+    
     public function getLabConf1()
     {
         $query = $this->db->select('lab_config.*')->get('lab_config');

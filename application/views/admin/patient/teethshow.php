@@ -7,7 +7,16 @@
                 <div class="box box-primary" id="tachelist">
                     <div class="box-header ptbnull">
                         <h3 class="box-title titlefix">لیست تمام ساخت دندان ها</h3>
-                        <p><label class="label label-warning">لیست داکتران در سال 1400</label></p>
+                        <div></div>
+                        <div>
+                        <select name="teeth_id" class="form-control" id="teeth_id" onchange="bringTeethList(this.value);" style="font-size: 20px;">
+                            <option value="">انتخاب</option>
+                            <?php foreach ($getyears as $std) {
+                            echo '<option value="' . $std['year'] . '">' . $std['year'] . '</option>';
+                            } ?>
+                            </select>
+                        </div>
+
                         <div class="box-tools pull-right">
                             <?php if ($this->rbac->hasPrivilege('charge_category', 'can_add')) { ?> 
                                 <!-- <a data-toggle="modal" data-target="#myModal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> <?php echo $this->lang->line('add') . " " . $this->lang->line('charge_category'); ?></a>   -->
@@ -33,95 +42,8 @@
                                 <th style="text-align: right;">قمت-افغانی</th>
                                 <th style="text-align: right;">عمل</th>
                                 </thead>
-                                <tbody>
-                                    <?php
-                                    $count = 1;
-                                    foreach ($chargeCategory as $category) {
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $category['unique_id']; ?></td>
-                                            <td><?php echo $category['patient_name']; ?></td>
-                                            <td><?php echo $category['patient_fname']; ?></td>
-                                            <td><?php echo $category["test_name"]; ?></td>
-                                            <td><?php echo $category["fees"]; ?></td>
-                                            <td><?php echo $category['day'];  ?>-<?php echo $category['month'];  ?>-<?php echo $category['year'];  ?></td>
-                                            <!-- <td><label><?php echo $category['round'];  ?></label></td> -->
-                                            <!-- <td><?php echo $category['lab_round'];  ?></label></td> -->
-                                            <td><?php echo $category['duplicate'];  ?></label></td>
-                                            <td>
-                                            <label style="color: green; font-size: 16px;">بالا:
-                                            <?php   
-                                                        if ($category['lh']==1){ echo "8"; } else { echo "-"; }
-                                                        if ($category['lg']==1){ echo "7"; } else echo "-";
-                                                        if ($category['lf']==1){ echo "6"; } else echo "-";
-                                                        if ($category['le']==1){ echo "5"; } else echo "-";
-                                                        if ($category['ld']==1){ echo "4"; } else echo "-";
-                                                        if ($category['lc']==1){ echo "3"; } else echo "-";
-                                                        if ($category['lb']==1){ echo "2"; } else echo "-";
-                                                        if ($category['la']==1){ echo "1"; } else echo "-";
-                                                    ?>
-                                            <label>
-                                            <label style="color: green; font-size: 16px;">پایین:
-                                            <?php   
-                                                        if ($category['ldh']==1){ echo "8"; } else { echo "-"; }
-                                                        if ($category['ldg']==1){ echo "7"; } else echo "-";
-                                                        if ($category['ldf']==1){ echo "6"; } else echo "-";
-                                                        if ($category['lde']==1){ echo "5"; } else echo "-";
-                                                        if ($category['ldd']==1){ echo "4"; } else echo "-";
-                                                        if ($category['ldc']==1){ echo "3"; } else echo "-";
-                                                        if ($category['ldb']==1){ echo "2"; } else echo "-";
-                                                        if ($category['lda']==1){ echo "1"; } else echo "-";
-                                                    ?>
-                                            <label>
-                                            </td>
-                                            <td>
-                                            <label style="color: green; font-size: 16px;">بالا:
-                                            <?php   
-                                                        if ($category['rh']==1){ echo "8"; } else { echo "-"; }
-                                                        if ($category['rg']==1){ echo "7"; } else echo "-";
-                                                        if ($category['rf']==1){ echo "6"; } else echo "-";
-                                                        if ($category['re']==1){ echo "5"; } else echo "-";
-                                                        if ($category['rd']==1){ echo "4"; } else echo "-";
-                                                        if ($category['rc']==1){ echo "3"; } else echo "-";
-                                                        if ($category['rb']==1){ echo "2"; } else echo "-";
-                                                        if ($category['ra']==1){ echo "1"; } else echo "-";
-                                                    ?>
-                                            </label>
-                                            <label style="color: green; font-size: 16px;">پایین:
-                                            <?php   
-                                                        if ($category['rdh']==1){ echo "8"; } else { echo "-"; }
-                                                        if ($category['rdg']==1){ echo "7"; } else echo "-";
-                                                        if ($category['rdf']==1){ echo "6"; } else echo "-";
-                                                        if ($category['rde']==1){ echo "5"; } else echo "-";
-                                                        if ($category['rdd']==1){ echo "4"; } else echo "-";
-                                                        if ($category['rdc']==1){ echo "3"; } else echo "-";
-                                                        if ($category['rdb']==1){ echo "2"; } else echo "-";
-                                                        if ($category['rda']==1){ echo "1"; } else echo "-";
-                                                    ?>
-                                            </label>
-                                            </td>
-                                            <td><?php echo $category['fees'];  ?></td>
-                                                <?php 
-                                                $totalfees += $category['fees'];
-                                                $totalamount += $category['duplicate'];
-                                                     ?>
-                                            <td class="text-right">
-                                                <?php if ($this->rbac->hasPrivilege('student_count_widget', 'can_view')) { ?> 
-                                                    <a onclick="get(<?php echo $category['id']; ?>)" data-target="#editmyModal"  class="btn btn-default btn-xs"  data-toggle="tooltip" title="<?php echo $this->lang->line('edit'); ?>">
-                                                        <span class="label label-success"><i class="fa fa-pencil"></i></span>
-                                                    </a>
-                                                <?php } if ($this->rbac->hasPrivilege('student_count_widget', 'can_delete')) { ?> 
-                                                    <a  class="btn btn-default btn-xs"  data-toggle="tooltip" title="<?php echo $this->lang->line('delete'); ?>" onclick="delete_recordById('<?php echo base_url(); ?>admin/chargecategory/delete/<?php echo $category['id'] ?>', '<?php echo $this->lang->line('delete_message'); ?>')";>
-                                                    <span class="label label-danger"><i class="fa fa-trash"></i></span>
-                                                    </a> 
-                                                <?php } ?>
-                                            </td>
-                                        </tr>
-                                        <?php
-                                        $count++;
-                                    }
-                                    ?>
-                                    
+                                <tbody id="charge_table_body">
+                                  
                                 </tbody>
                                 <tr class="box box-solid total-bg"  style="font-size: 23px; color: green; ">
                                         <td class="text-right" colspan="14">مجموعه ساخت دندان: 
@@ -651,4 +573,51 @@
             //    console.log("hello Dear Rasikh");
             }
 
+        
+function bringTeethList(year = 1400) {
+    $.ajax({
+        url: '<?php echo base_url(); ?>admin/patient/bringTeeths/' + year,
+        type: "GET",
+        success: function (response) {
+            console.log("test/response", response);
+            var data = JSON.parse(response);
+
+            // Create a new HTML string containing the returned data
+            var html = '';
+            for (var i = 0; i < data.length; i++) {
+                html += '<tr>';
+                html += '<td>' + data[i].unique_id + '</td>';
+                html += '<td>' + data[i].patient_name + '</td>';
+                html += '<td>' + data[i].patient_fname + '</td>';
+                html += '<td>' + data[i].test_name + '</td>';
+                html += '<td>' + data[i].fees + '</td>';
+                html += '<td>' + data[i].day + '-' + data[i].month + '-' + data[i].year + '</td>';
+                html += '<td>' + data[i].duplicate + '</td>';
+                html += '<td>';
+                html += (data[i].lh == 1 ? '8' : '-') + (data[i].lg == 1 ? '7' : '-') + (data[i].lf == 1 ? '6' : '-') + (data[i].le == 1 ? '5' : '-') + (data[i].ld == 1 ? '4' : '-') + (data[i].lc == 1 ? '3' : '-') + (data[i].lb == 1 ? '2' : '-') + (data[i].la == 1 ? '1' : '-');
+                html += (data[i].ldh == 1 ? '8' : '-') + (data[i].ldg == 1 ? '7' : '-') + (data[i].ldf == 1 ? '6' : '-') + (data[i].lde == 1 ? '5' : '-') + (data[i].ldd == 1 ? '4' : '-') + (data[i].ldc == 1 ? '3' : '-') + (data[i].ldb == 1 ? '2' : '-') + (data[i].lda == 1 ? '1' : '-');
+                html += '</td>';
+                html += '<td>';
+                html += (data[i].rh == 1 ? '8' : '-') + (data[i].rg == 1 ? '7' : '-') + (data[i].rf == 1 ? '6' : '-') + (data[i].re == 1 ? '5' : '-') + (data[i].rd == 1 ? '4' : '-') + (data[i].rc == 1 ? '3' : '-') + (data[i].rb == 1 ? '2' : '-') + (data[i].ra == 1 ? '1' : '-');
+                html += (data[i].rdh == 1 ? '8' : '-') + (data[i].rdg == 1 ? '7' : '-') + (data[i].rdf == 1 ? '6' : '-') + (data[i].rde == 1 ? '5' : '-') + (data[i].rdd == 1 ? '4' : '-') + (data[i].rdc == 1 ? '3' : '-') + (data[i].rdb == 1 ? '2' : '-') + (data[i].rda == 1 ? '1' : '-');
+                html += '</td>';
+                html += '<td>' + data[i].fees + '</td>';
+                html += '<td class="text-right">';
+                html += '<?php if ($this->rbac->hasPrivilege('student_count_widget', 'can_view')) { ?>';
+                html += '<a onclick="get(' + data[i].id + ')" data-target="#editmyModal" class="btn btn-default btn-xs" data-toggle="tooltip" title="<?php echo $this->lang->line('edit'); ?>"><span class="label label-success"><i class="fa fa-pencil"></i></span></a>';
+                html += '<?php } ?>';
+                html += '<?php if ($this->rbac->hasPrivilege('student_count_widget', 'can_delete')) { ?>';
+                html += '<a class="btn btn-default btn-xs" data-toggle="tooltip" title="<?php echo $this->lang->line('delete'); ?>" onclick="delete_recordById(\'<?php echo base_url(); ?>admin/chargecategory/delete/' + data[i].id + '\', \'<?php echo $this->lang->line('delete_message'); ?>\')"><span class="label label-danger"><i class="fa fa-trash"></i></span></a>';
+                html += '<?php } ?>';
+                html += '</td>';
+            }
+
+            // Replace the contents of the "charge_table_body" tbody with the new HTML string
+            $('#charge_table_body').html(html);
+        },
+        error: function (erro) {
+            console.log("test/erro", erro);
+        },
+    });
+}
 </script>

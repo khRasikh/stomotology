@@ -16,14 +16,20 @@ class Charge_category_model extends CI_model {
         }
     }
 
-    public function getChargeCategory($id = null) {
-        if (!empty($id)) {
-            $query = $this->db->where("id", $id)->get('lab_lab');
-            return $query->row_array();
-        } else {
-            $query = $this->db->where('year', 1400)->get("lab_lab");
-            return $query->result_array();
-        }
+    // public function getChargeCategory($y = null) {
+    //     if (!empty($y)) {
+    //         $query = $this->db->where("year", $y)->get('lab_lab');
+    //         return $query->row_array();
+    //     } else {
+    //         $query = $this->db->where("year", 1401)->get("lab_lab");
+    //         return $query->result_array();
+    //     }
+    // }
+
+    public function getChargeCategoryAnnually($y) {
+        $query = $this->db->where("year", $y)->get("lab_lab");
+        return $query->result_array();
+
     }
 
     public function check_category_exists($id, $name) {
