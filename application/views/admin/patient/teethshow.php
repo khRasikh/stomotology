@@ -1,3 +1,11 @@
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+
 <div class="content-wrapper" style="min-height: 946px;">  
  
     <!-- Main content -->
@@ -27,8 +35,13 @@
                         <div class="mailbox-controls">
                         </div>
                         <div class="table-responsive mailbox-messages">
-                            <div class="download_label"><?php echo $this->lang->line('charge_category') . " " . $this->lang->line('details'); ?></div>
-                            <table class="table table-striped table-bordered table-hover example" >
+                            <!-- Include TableExport library files -->
+
+<!-- Add a button or icon for exporting -->
+<!-- <button id="exportButton" class="btn btn-primary">Export to Excel</button> -->
+                            <!-- <div class="download_label"><?php echo $this->lang->line('charge_category') . " " . $this->lang->line('details'); ?></div> -->
+                            <table class="table table-striped table-bordered table-hover example" id="table_id">
+                            
                             <thead>
                                 <th>آی دی</th>
                                 <th>نام</th>
@@ -45,11 +58,15 @@
                                 <tbody id="charge_table_body">
                                   
                                 </tbody>
-                                <tr class="box box-solid total-bg"  style="font-size: 23px; color: green; ">
-                                        <td class="text-right" colspan="14">مجموعه ساخت دندان: 
-                                        <label><?php echo $totalfees."  افغانی"; ?></label>، به تعداد
-                                        <label><?php echo $totalamount."  ساخت"; ?></label>. تاریخ فعلی امروز:                                </td>
-                            </tr>
+                                <!-- Add this row at the bottom of your table body -->
+                                <tr class="box box-solid total-bg" style="font-size: 23px; color: green;">
+                                    <td class="text-right" colspan="14">مجموعه ساخت دندان: 
+                                        <label id="totalFeesLabel" style="font-size: 24px; color: blue;">0 افغانی</label>، به تعداد
+                                        <label id="totalAmountLabel" style="font-size: 24px; color: blue;">0 ساخت</label>. تاریخ فعلی امروز:
+                                        <label id="currentDateLabel"  style="font-size: 18px; color: blue;"><?php echo date(' H:i:s Y-m-d'); ?></label>
+                                    </td>
+                                </tr>
+
                             </table>
                         </div>
                     </div>
@@ -579,12 +596,15 @@ function bringTeethList(year = 1400) {
         url: '<?php echo base_url(); ?>admin/patient/bringTeeths/' + year,
         type: "GET",
         success: function (response) {
-            console.log("test/response", response);
             var data = JSON.parse(response);
 
             // Create a new HTML string containing the returned data
             var html = '';
+            var totalFees = 0;
+            var totalAmount = 0;
             for (var i = 0; i < data.length; i++) {
+                totalFees += parseInt(data[i].fees);
+                totalAmount += 1;
                 html += '<tr>';
                 html += '<td>' + data[i].unique_id + '</td>';
                 html += '<td>' + data[i].patient_name + '</td>';
@@ -611,8 +631,11 @@ function bringTeethList(year = 1400) {
                 html += '<?php } ?>';
                 html += '</td>';
             }
+            // console.log("test", totalAmount, totalFees)
+            $('#totalFeesLabel').text(totalFees.toFixed(2) + ' افغانی');
+            $('#totalAmountLabel').text(totalAmount + ' ساخت');
 
-            // Replace the contents of the "charge_table_body" tbody with the new HTML string
+            html += '</tr>';
             $('#charge_table_body').html(html);
         },
         error: function (erro) {
@@ -621,3 +644,4 @@ function bringTeethList(year = 1400) {
     });
 }
 </script>
+ 
