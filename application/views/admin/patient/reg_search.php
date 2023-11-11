@@ -147,7 +147,7 @@ $genderList = $this->customlib->getGender();
 <!-- myModal -->
 <!-- Edit Patient -->
 <div class="modal fade" id="edi_model" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" role="document" style="margin-top: -11px" >
         <div class="modal-content modal-media-content">
             <div class="modal-header modal-media-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -313,7 +313,7 @@ $genderList = $this->customlib->getGender();
 </div>
 <!-- dd -->
 <div class="modal fade" id="myModaledit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" role="document" style="margin-top: -11px" >
         <div class="modal-content modal-media-content">
             <div class="modal-header modal-media-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -437,7 +437,7 @@ foreach ($bloodgroup as $key => $value) {
 
 <!-- examinationModal -->
 <div class="modal fade" id="examinationModal"  role="dialog" aria-labelledby="examinationModal">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" role="document" style="margin-top: -11px" >
         <div class="modal-content modal-media-content">
             <div class="modal-header modal-media-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -518,182 +518,174 @@ foreach ($bloodgroup as $key => $value) {
                                          <div class="col-md-2">
                                             <div class="form-group">
                                                 <label>شماره مسلسل</label><small class="req"> *</small> 
-                                                <input name="patient_unique_id" type="text" class="form-control" placeholder="30001" />
+                                                <input name="patient_unique_id" type="text" class="form-control" placeholder="30001" required />
                                                 <span class="text-danger"><?php echo form_error('patient_name'); ?></span>
                                             </div>
                                         </div>
-                                        
+ 
+                                        <!-- end of textboxes -->
+                                        <div class="col-md-12" style="margin-bottom: 44px;">
+                                                <div class="col-md-3">
+                                                <td>
+                                                    <label>نوعیت ساخت  </label>
+                                                    <select  name="allowance_type1" class="form-control" id="allowance_type1" onchange="bringLabconf('1');" style="font-size: 20px;">
+                                                        <option  value="">انتخاب</option>
+                                                        <?php
+                                                        foreach ($labconf as $std) {
+                                                            echo '<option value="' . $std['id'] . '">' . $std['test_name'] . '</option>';
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                </td>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <td>
+                                                        <label>فی-افغانی</label>
+                                                        <input class="form-control" type="number" id="allowance_amount1" name="allowance_amount1"  value="0" onkeyup="totalDue();" style="color: green; font-weight: bold; font-size: 24px;">
+                                                    </td>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <td>
+                                                        <label>تعداد </label>
+                                                        <input class="form-control" type="number" name="numbers" id="numbers"  value="0" onkeyup = totalDue(); style="color: green; font-weight: bold; font-size: 24px;">
+                                                    </td>
+                                                </div>
+                                                
+                                                <div class="col-md-2">
+                                                    <label>تخفیف-افغانی </label>
+                                                    <td>
+                                                        <input class="form-control" type="number" name="discount1" id="discount_id"  value="0" onkeyup = totalDue(); style="color: red; font-weight: bold; font-size: 24px;">
+                                                    </td>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <td>
+                                                        <label>مجموع-افغانی </label>
+                                                        <input class="form-control"  type="number" name="amount_all" id="amount_all" value="0" style="color: green; font-weight: bold; font-size: 24px;">
+                                                    </td>
+                                                </div>
+                                            </div>
                                         <div class="col-md-12" style="margin-bottom: 40px; font-size: 20px; color: black;">
                                              <!-- <button type="button" onclick="add_more('1');" id="addmore1"  ><i class="fa fa-plus"></i></button>
                                              <button type="button" class="btn btn-success" onclick="calculateamount();">جمع</button> -->
                                              <input type="hidden" name="ex_number" id="ex_number" readonly value="1">
-                                             
+                                            
+                                             <div style="text-align: center;">
+                                                <div class="col-md-4">چپ</div>
+                                                <div class="col-md-4">موقعیت</div>
+                                                <div class="col-md-4">راست</div>
+                                            </div>
                                            <div class="sameheight">
                                                 <div class="feebox">
-                                                    <div> 
-                                                        <p style="color: black; font-size: 16px; margin-bottom: -12px; margin-top: -34px;">نوعیت ساخت"
-                                                         <b style="margin-right: 60px; margin-left: 220px; color: green;"> </b> 
-                                                         <label>چپ--<label><b style="margin-right: 10px; margin-left: 10px;">  موقعیت </b><label>--راست <label>
-                                                           </p>
-                                                    </div>
-                                                    
-
                                                     <table class="table3" id="tableID">
-                                                        <tr id="row1">
+                                                        <tr id="row1" style="text-align: center; font-size: 20px; font-weight: bold;  border-bottom-color: blue; border-bottom-style: solid !important ">
                                                             <td>
-                                                                <select style="width: 155px;" name="allowance_type1" class="form-control" id="allowance_type1" onchange="bringLabconf('1');" style="font-size: 20px;">
-
-                                                                    <option  value="">انتخاب</option>
-                                                                    <?php
-                                                                    foreach ($labconf as $std) {
-                                                                        echo '<option value="' . $std['id'] . '">' . $std['test_name'] . '</option>';
-                                                                    }
-                                                                    ?>
-                                                                </select>
-                                                            </td>
-                                                            <td></td>
-                                                            
-                                                            <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox8" id="checkbox8" value="1">8
+                                                                <input type="checkbox" name="checkbox8" id="checkbox8" value="1">8
                                                             </td>
                                                             <td>
-                                                               <input style="font-size: 10px;" type="checkbox" name="checkbox7" id="checkbox7" value="1">7
+                                                               <input type="checkbox" name="checkbox7" id="checkbox7" value="1">7
                                                              </td>
                                                              <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox6" id="checkbox6" value="1">6
+                                                                <input type="checkbox" name="checkbox6" id="checkbox6" value="1">6
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox5" id="checkbox5" value="1">5
+                                                                <input type="checkbox" name="checkbox5" id="checkbox5" value="1">5
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox4" id="checkbox4" value="1">4
+                                                                <input type="checkbox" name="checkbox4" id="checkbox4" value="1">4
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox3" id="checkbox3" value="1">3
+                                                                <input type="checkbox" name="checkbox3" id="checkbox3" value="1">3
                                                             </td>
                                                             
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox2" id="checkbox2" value="1">2
+                                                                <input type="checkbox" name="checkbox2" id="checkbox2" value="1">2
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox1" id="checkbox1" value="1">1
+                                                                <input type="checkbox" name="checkbox1" id="checkbox1" value="1">1
                                                             </td>
                                                             
-                                                            <td ><h1 style="hieght: 90px;">|</h1>
+                                                            <td >
+                                                                <div style=" hieght: 90px; -webkit-border-vertical-spacing: initial; height: 59px; padding-bottom: 69px; background-color: black; width: 4px;">|</div>
                                                              </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox9" id="checkbox9" value="1">1
+                                                                <input type="checkbox" name="checkbox9" id="checkbox9" value="1">1
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox10" id="checkbox10" value="1">2
+                                                                <input type="checkbox" name="checkbox10" id="checkbox10" value="1">2
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox11" id="checkbox11" value="1">3
+                                                                <input type="checkbox" name="checkbox11" id="checkbox11" value="1">3
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox12" id="checkbox12" value="1">4
+                                                                <input type="checkbox" name="checkbox12" id="checkbox12" value="1">4
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox13" id="checkbox13" value="1">5
+                                                                <input type="checkbox" name="checkbox13" id="checkbox13" value="1">5
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox14" id="checkbox14" value="1">6
+                                                                <input type="checkbox" name="checkbox14" id="checkbox14" value="1">6
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox15" id="checkbox15" value="1">7
+                                                                <input type="checkbox" name="checkbox15" id="checkbox15" value="1">7
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox16" id="checkbox16" value="1">8
+                                                                <input type="checkbox" name="checkbox16" id="checkbox16" value="1">8
                                                             </td>
                                                         </tr>
-                                                        <tr id="row1">
+
+                                                        <tr id="row1"  style="text-align: center; font-size: 20px; font-weight: bold;">
                                                             <td>
-                                                                
-                                                            </td><td>
-                                                                
-                                                                </td>
-                                                            
-                                                            <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox24" id="checkbox24" value="1">8
+                                                                <input type="checkbox" name="checkbox24" id="checkbox24" value="1">8
                                                             </td>
                                                             <td>
-                                                               <input style="font-size: 10px;" type="checkbox" name="checkbox23" id="checkbox23" value="1">7
+                                                               <input type="checkbox" name="checkbox23" id="checkbox23" value="1">7
                                                              </td>
                                                              <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox22" id="checkbox22" value="1">6
+                                                                <input type="checkbox" name="checkbox22" id="checkbox22" value="1">6
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox21" id="checkbox21" value="1">5
+                                                                <input type="checkbox" name="checkbox21" id="checkbox21" value="1">5
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox20" id="checkbox20" value="1">4
+                                                                <input type="checkbox" name="checkbox20" id="checkbox20" value="1">4
                                                             </td>
                                                              <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox19" id="checkbox19" value="1">3
+                                                                <input type="checkbox" name="checkbox19" id="checkbox19" value="1">3
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox18" id="checkbox18" value="1">2
+                                                                <input type="checkbox" name="checkbox18" id="checkbox18" value="1">2
                                                             </td>
                                                            <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox17" id="checkbox17" value="1">1
+                                                                <input type="checkbox" name="checkbox17" id="checkbox17" value="1">1
                                                             </td>
-                                                            <td ><h1 style="hieght: 90px;">|</h1>
+                                                            <td ><div style=" hieght: 90px; -webkit-border-vertical-spacing: initial; height: 59px; padding-bottom: 69px; background-color: black; width: 4px; margin-top: -15px">|</div>
                                                              </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox25" id="checkbox25" value="1">1
+                                                                <input type="checkbox" name="checkbox25" id="checkbox25" value="1">1
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox26" id="checkbox26" value="1">2
+                                                                <input type="checkbox" name="checkbox26" id="checkbox26" value="1">2
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox27" id="checkbox27" value="1">3
+                                                                <input type="checkbox" name="checkbox27" id="checkbox27" value="1">3
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox28" id="checkbox28" value="1">4
+                                                                <input type="checkbox" name="checkbox28" id="checkbox28" value="1">4
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox29" id="checkbox29" value="1">5
+                                                                <input type="checkbox" name="checkbox29" id="checkbox29" value="1">5
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox30" id="checkbox30" value="1">6
+                                                                <input type="checkbox" name="checkbox30" id="checkbox30" value="1">6
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox31" id="checkbox31" value="1">7
+                                                                <input type="checkbox" name="checkbox31" id="checkbox31" value="1">7
                                                             </td>
                                                             <td>
-                                                                <input style="font-size: 10px;" type="checkbox" name="checkbox32" id="checkbox32" value="1">8
+                                                                <input type="checkbox" name="checkbox32" id="checkbox32" value="1">8
                                                             </td>
-                                                            <td></td> 
                                                         </tr> 
                                                     </table>  
-
-                                                    
-                                                    <div class="col-md-12">
-                                                        <div class="col-md-3">
-                                                            <td><br>
-                                                                <label>قمت فی واحد-افغانی </label>
-                                                                <input type="number" id="allowance_amount1" name="allowance_amount1"  value="0">
-                                                            </td>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <td><br>
-                                                                <label>تعداد </label>
-                                                                <input type="number" name="numbers" id="numbers"  value="0">
-                                                            </td>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <td><br>
-                                                                <label>مجموع مبلغ-افغانی </label>
-                                                                <input type="number" name="amount_all" id="amount_all" onclick = totalDue(); value="0">
-                                                            </td>
-                                                        </div>
-                                                        <div class="col-md-3"><br>
-                                                        <label>تخفیف- افغانی </label>
-                                                            <td>
-                                                                <input type="number" name="discount1" id="discount_id"  value="0">
-                                                            </td>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </div>
                                     </div><!--./row--> 
@@ -710,8 +702,8 @@ foreach ($bloodgroup as $key => $value) {
                                 <div class="box-footer">
                                     <div class="pull-right">
                                        <!--  <button style="color: white;" type="submit" class="btn btn-info pull-right"><a href="<?php echo base_url(); ?>admin/patient/print/<?php echo $student['id'] ?>">Submit and Print</a></button> -->
-                                       <button style="color: white;" type="submit" class="btn btn-info pull-right">ذخیره   </button>
-                                       <button style="color: white; margin-left:20px; font-size: 10px;" type="button" class="btn btn-danger pull-right" data-dismiss="modal">برگشت </button>
+                                       <button style="color: white; font-size: 25px;" type="submit" class="btn btn-info pull-right">ذخیره   </button>
+                                       <button style="color: white; margin-left:20px; font-size: 20px;" type="button" class="btn btn-danger pull-right" data-dismiss="modal">برگشت </button>
                                     </div>
                                 </div>
                             </div><!--./row-->  

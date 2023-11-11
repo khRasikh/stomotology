@@ -2088,6 +2088,14 @@ class patient extends Admin_Controller
     echo $result['price'];
   }
 
+  public function bringTeeths($y)
+{
+    $query = $this->db->select('lab_lab.*')->where("year", $y)->get('lab_lab');
+    $data = $query->result_array();
+    echo json_encode($data);
+}
+
+
   public function getPatientNo()
   {
     $id = $this->input->post("patient_id");
@@ -2313,7 +2321,7 @@ class patient extends Admin_Controller
     $this->load->view('layout/footer');
   }
 
-  public function teethlist()
+  public function teethlist($year=1401)
   {
     if (!$this->rbac->hasPrivilege('opd_patient', 'can_view')) {
       access_denied();
@@ -2322,8 +2330,10 @@ class patient extends Admin_Controller
     $this->session->set_userdata('sub_menu', 'charges/index');
     $chargecategoryid = $this->input->post("chargecategoryid");
     $data['labconf'] = $this->patient_model->getLabConf();
-    $chargeCategory = $this->charge_category_model->getChargeCategory();
-    $data["chargeCategory"] = $chargeCategory;
+    $data['getyears'] = $this->patient_model->getYears();
+  
+    // $chargeCategory = $this->charge_category_model->getChargeCategoryAnnually($year);
+    // $data["chargeCategory"] = $chargeCategory;
     $data['charge_type'] = $this->charge_type;
     $this->form_validation->set_rules(
       'name',
@@ -2380,7 +2390,7 @@ class patient extends Admin_Controller
   public function printDischarge($id = 0)
   {
     $data['patient'] = $this->patient_model->getPatientRecord($id);
-    $data['operations_lists'] = $this->patient_model->getOperationList($patient_id);
+    $data['operations_lists'] = $this->patient_model->getOperationList($id);
     $data['nursing_chges_lists'] = $this->patient_model->getNursingCharges($id);
     $data['ipd_deatils_amount'] = $this->patient_model->getIPDamount($id);
     // $data['patient_ward'] = $this->patient_model->getNursingServinces($id);
