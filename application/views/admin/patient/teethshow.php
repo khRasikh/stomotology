@@ -5,6 +5,8 @@
 <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+
 
 <div class="content-wrapper" style="min-height: 946px;">  
  
@@ -58,6 +60,7 @@
                                 <tbody id="charge_table_body">
                                   
                                 </tbody>
+
                                 <!-- Add this row at the bottom of your table body -->
                                 <tr class="box box-solid total-bg" style="font-size: 23px; color: green;">
                                     <td class="text-right" colspan="14">مجموعه ساخت دندان: 
@@ -66,6 +69,7 @@
                                         <label id="currentDateLabel"  style="font-size: 18px; color: blue;"><?php echo date(' H:i:s Y-m-d'); ?></label>
                                     </td>
                                 </tr>
+                                <button id="export_button_container"></button>
 
                             </table>
                         </div>
@@ -590,14 +594,13 @@
             //    console.log("hello Dear Rasikh");
             }
 
-        
 function bringTeethList(year = 1400) {
     $.ajax({
         url: '<?php echo base_url(); ?>admin/patient/bringTeeths/' + year,
         type: "GET",
         success: function (response) {
             var data = JSON.parse(response);
-
+            console.log("data in success", data)
             // Create a new HTML string containing the returned data
             var html = '';
             var totalFees = 0;
@@ -637,11 +640,77 @@ function bringTeethList(year = 1400) {
 
             html += '</tr>';
             $('#charge_table_body').html(html);
+
+           // Create Export to Excel button
+            var exportButton = $('<button class="btn btn-primary">Export to Excel</button>');
+            exportButton.on('click', function() {
+                exportToExcel(data);
+            });
+
+            $('#export_button_container').html(exportButton);
         },
         error: function (erro) {
             console.log("test/erro", erro);
         },
     });
 }
+
+function test(a) {
+    console.log("Data in test function:", a);
+    // Further handling of the data as needed for exporting to Excel
+}
+
+function exportToExcel(data) {
+    if (!data || !Array.isArray(data)) {
+        console.error('Data is undefined, null, or not in the correct format.'); 
+        return;
+    }
+
+    // Define a mapping object to match the existing properties with the desired headers
+    const propertyMapping = {
+        'unique_id': 'شماره مسلسل',
+        'patient_name': 'اسم',
+        'patient_fname': 'اسم پدر',
+        'test_name': 'تست',
+        'duplicate': 'تعداد',
+        'day': undefined, // Exclude day, month, year from headers
+        'month': undefined,
+        'year': undefined,
+        'fees': 'قمت فی ',
+    };
+
+    // Transform each object's properties to match the desired headers
+    const transformedData = data.map(item => {
+        const transformedItem = {};
+        Object.keys(item).forEach(key => {
+            if (key === 'day' || key === 'month' || key === 'year') {
+                return; // Skip day, month, year properties
+            }
+            const newKey = propertyMapping[key];
+            if (newKey) {
+                transformedItem[newKey] = item[key]; // Rename the property
+            }
+        });
+        // Concatenate day, month, and year into a single property 'تاریخ' (Date)
+        transformedItem["موقعیت چپ"] = (item.lh == 1 ? '8' : '-') + (item.lg == 1 ? '7' : '-') + (item.lf == 1 ? '6' : '-') + (item.le == 1 ? '5' : '-') + (item.ld == 1 ? '4' : '-') + (item.lc == 1 ? '3' : '-') + (item.lb == 1 ? '2' : '-') + (item.la == 1 ? '1' : '-')
+        transformedItem["موقعیت راست"] = (item.rdh == 1 ? '8' : '-') + (item.rdg == 1 ? '7' : '-') + (item.rdf == 1 ? '6' : '-') + (item.rde == 1 ? '5' : '-') + (item.rdd == 1 ? '4' : '-') + (item.rdc == 1 ? '3' : '-') + (item.rdb == 1 ? '2' : '-') + (item.rda == 1 ? '1' : '-');
+        transformedItem['تاریخ'] = item.day + '-' + item.month + '-' + item.year;
+        transformedItem['قمت مجموعی'] = item.duplicate == 0 ? item.fees : item.duplicate * item.fees;
+        return transformedItem;
+    });
+
+    const filename = 'گذارش کلی ساخت دندانها.xlsx';
+    const headers = Object.values(propertyMapping).filter(header => header); // Exclude undefined headers
+
+    const worksheet = XLSX.utils.json_to_sheet(transformedData, { header: headers });
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'گذارش ساخت دندانها');
+
+    XLSX.writeFile(workbook, filename);
+}
+
+
+
 </script>
  
