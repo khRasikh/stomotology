@@ -7,6 +7,15 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
 
+<!-- jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+
+<!-- DataTables JavaScript -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
 
 <div class="content-wrapper" style="min-height: 946px;">  
  
@@ -26,39 +35,28 @@
                             } ?>
                             </select>
                         </div>
-
-                        <div class="box-tools pull-right">
-                            <?php if ($this->rbac->hasPrivilege('charge_category', 'can_add')) { ?> 
-                                <!-- <a data-toggle="modal" data-target="#myModal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> <?php echo $this->lang->line('add') . " " . $this->lang->line('charge_category'); ?></a>   -->
-                            <?php } ?>   
-                        </div>
                     </div>
                     <div class="box-body">
                         <div class="mailbox-controls">
                         </div>
                         <div class="table-responsive mailbox-messages">
-                            <!-- Include TableExport library files -->
-
-<!-- Add a button or icon for exporting -->
-<!-- <button id="exportButton" class="btn btn-primary">Export to Excel</button> -->
-                            <!-- <div class="download_label"><?php echo $this->lang->line('charge_category') . " " . $this->lang->line('details'); ?></div> -->
-                            <table class="table table-striped table-bordered table-hover example" id="table_id">
-                            
-                            <thead>
-                                <th>آی دی</th>
-                                <th>نام</th>
-                                <th>نام پدر</th>
-                                <th>تست</th>
-                                <th>نوعیت ساخت</th>
-                                <th>تاریخ ساخت</th>     
-                                <th>تعداد دندان</th>
-                                <th>موقعیت-چب </th>
-                                <th >موقعیت-راست </th>
-                                <th style="text-align: right;">قمت-افغانی</th>
-                                <th style="text-align: right;">عمل</th>
+                        <table class="table table-striped table-bordered table-hover" id="table_id">
+                                <thead style="background-color: #f2f2f2;">
+                                    <tr>
+                                        <th style="vertical-align: middle;">آی دی</th>
+                                        <th style="vertical-align: middle;">نام</th>
+                                        <th style="vertical-align: middle;">نام پدر</th>
+                                        <th style="vertical-align: middle;">نوعیت ساخت</th>
+                                        <th style="vertical-align: middle;">قمت_افغانی</th>
+                                        <th style="vertical-align: middle;">تاریخ ساخت</th>
+                                        <th style="vertical-align: middle;">تعداد دندان</th>
+                                        <th style="vertical-align: middle;">موقعیت-چب</th>
+                                        <th style="vertical-align: middle;">موقعیت-راست</th>
+                                        <th style="vertical-align: middle; text-align: right;">مجموع-افغانی</th>
+                                        <th style="vertical-align: middle; text-align: right;">عمل</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="charge_table_body">
-                                  
                                 </tbody>
 
                                 <!-- Add this row at the bottom of your table body -->
@@ -69,8 +67,7 @@
                                         <label id="currentDateLabel"  style="font-size: 18px; color: blue;"><?php echo date(' H:i:s Y-m-d'); ?></label>
                                     </td>
                                 </tr>
-                                <button id="export_button_container"></button>
-
+                                <button id="export_button_container">فایل اکسل</button>
                             </table>
                         </div>
                     </div>
@@ -624,7 +621,7 @@ function bringTeethList(year = 1400) {
                 html += (data[i].rh == 1 ? '8' : '-') + (data[i].rg == 1 ? '7' : '-') + (data[i].rf == 1 ? '6' : '-') + (data[i].re == 1 ? '5' : '-') + (data[i].rd == 1 ? '4' : '-') + (data[i].rc == 1 ? '3' : '-') + (data[i].rb == 1 ? '2' : '-') + (data[i].ra == 1 ? '1' : '-');
                 html += (data[i].rdh == 1 ? '8' : '-') + (data[i].rdg == 1 ? '7' : '-') + (data[i].rdf == 1 ? '6' : '-') + (data[i].rde == 1 ? '5' : '-') + (data[i].rdd == 1 ? '4' : '-') + (data[i].rdc == 1 ? '3' : '-') + (data[i].rdb == 1 ? '2' : '-') + (data[i].rda == 1 ? '1' : '-');
                 html += '</td>';
-                html += '<td>' + data[i].fees + '</td>';
+                html += '<td>' + (data[i].duplicate == 0 || data[i].duplicate == null || data[i].fees == 0  ? data[i].fees : data[i].duplicate * data[i].fees) + '</td>';
                 html += '<td class="text-right">';
                 html += '<?php if ($this->rbac->hasPrivilege('student_count_widget', 'can_view')) { ?>';
                 html += '<a onclick="get(' + data[i].id + ')" data-target="#editmyModal" class="btn btn-default btn-xs" data-toggle="tooltip" title="<?php echo $this->lang->line('edit'); ?>"><span class="label label-success"><i class="fa fa-pencil"></i></span></a>';
@@ -642,22 +639,18 @@ function bringTeethList(year = 1400) {
             $('#charge_table_body').html(html);
 
            // Create Export to Excel button
-            var exportButton = $('<button class="btn btn-primary">Export to Excel</button>');
+            var exportButton = $('<button class="btn btn-primary">دانلود فایل اکسل</button>');
             exportButton.on('click', function() {
                 exportToExcel(data);
             });
 
             $('#export_button_container').html(exportButton);
+            // Initialize DataTable
         },
         error: function (erro) {
             console.log("test/erro", erro);
         },
     });
-}
-
-function test(a) {
-    console.log("Data in test function:", a);
-    // Further handling of the data as needed for exporting to Excel
 }
 
 function exportToExcel(data) {
@@ -695,7 +688,7 @@ function exportToExcel(data) {
         transformedItem["موقعیت چپ"] = (item.lh == 1 ? '8' : '-') + (item.lg == 1 ? '7' : '-') + (item.lf == 1 ? '6' : '-') + (item.le == 1 ? '5' : '-') + (item.ld == 1 ? '4' : '-') + (item.lc == 1 ? '3' : '-') + (item.lb == 1 ? '2' : '-') + (item.la == 1 ? '1' : '-')
         transformedItem["موقعیت راست"] = (item.rdh == 1 ? '8' : '-') + (item.rdg == 1 ? '7' : '-') + (item.rdf == 1 ? '6' : '-') + (item.rde == 1 ? '5' : '-') + (item.rdd == 1 ? '4' : '-') + (item.rdc == 1 ? '3' : '-') + (item.rdb == 1 ? '2' : '-') + (item.rda == 1 ? '1' : '-');
         transformedItem['تاریخ'] = item.day + '-' + item.month + '-' + item.year;
-        transformedItem['قمت مجموعی'] = item.duplicate == 0 ? item.fees : item.duplicate * item.fees;
+        transformedItem['قمت مجموعی'] = item.duplicate == 0 || data[i].duplicate == null || data[i].fees == 0 ? item.fees : item.duplicate * item.fees;
         return transformedItem;
     });
 
@@ -709,8 +702,6 @@ function exportToExcel(data) {
 
     XLSX.writeFile(workbook, filename);
 }
-
-
 
 </script>
  
