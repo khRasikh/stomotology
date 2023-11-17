@@ -24,16 +24,19 @@
         <div class="row">
             <div class="col-md-12"> 
                 <div class="box box-primary" id="tachelist">
-                    <div class="box-header ptbnull">
-                        <h3 class="box-title titlefix">لیست تمام ساخت دندان ها</h3>
-                        <div></div>
-                        <div>
+                <h3 class="box-title titlefix margin-12" style="font-size: 20px; margin: 12px;">لیست تمام ساخت دندان ها</h3>
+                    <div class="box-header">
+                        <div class="col-md-6">
                         <select name="teeth_id" class="form-control" id="teeth_id" onchange="bringTeethList(this.value);" style="font-size: 20px;">
                             <option value="">انتخاب</option>
                             <?php foreach ($getyears as $std) {
                             echo '<option value="' . $std['year'] . '">' . $std['year'] . '</option>';
                             } ?>
                             </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <input type="text" id="custom-search-input" class="form-control" placeholder="جستجو...">
                         </div>
                     </div>
                     <div class="box-body">
@@ -413,7 +416,12 @@
         </div><!--./row--> 
     </div>
 </div>
-
+<style>
+    /* Hide default DataTables search box */
+    .dataTables_wrapper .dataTables_filter {
+        display: none;
+    }
+</style>
 <script>
     $(document).ready(function (e) {
         $('#formadd').on('submit', (function (e) {
@@ -638,6 +646,20 @@ function bringTeethList(year = 1400) {
             html += '</tr>';
             $('#charge_table_body').html(html);
 
+           
+
+            // Initialize DataTable
+            $('#custom-search-input').on('keyup', function () {
+                $('#table_id').DataTable().search($(this).val()).draw();
+            });
+
+            $('#table_id').DataTable({
+                "searching": true, // Disable default search
+                "language": {
+                    "searchPlaceholder": "درحال جستجو...", // Customize search input placeholder
+                }
+            });
+
            // Create Export to Excel button
             var exportButton = $('<button class="btn btn-primary">دانلود فایل اکسل</button>');
             exportButton.on('click', function() {
@@ -645,7 +667,6 @@ function bringTeethList(year = 1400) {
             });
 
             $('#export_button_container').html(exportButton);
-            // Initialize DataTable
         },
         error: function (erro) {
             console.log("test/erro", erro);
