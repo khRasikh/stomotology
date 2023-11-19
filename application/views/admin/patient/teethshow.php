@@ -50,7 +50,6 @@
                                         <th style="vertical-align: middle;">نام</th>
                                         <th style="vertical-align: middle;">نام پدر</th>
                                         <th style="vertical-align: middle;">نوعیت ساخت</th>
-                                        <th style="vertical-align: middle;">قمت_افغانی</th>
                                         <th style="vertical-align: middle;">تاریخ ساخت</th>
                                         <th style="vertical-align: middle;">تعداد دندان</th>
                                         <th style="vertical-align: middle;">موقعیت-چب</th>
@@ -619,7 +618,6 @@ function bringTeethList(year = 1400) {
                 html += '<td>' + data[i].patient_name + '</td>';
                 html += '<td>' + data[i].patient_fname + '</td>';
                 html += '<td>' + data[i].test_name + '</td>';
-                html += '<td>' + data[i].fees + '</td>';
                 html += '<td>' + data[i].day + '-' + data[i].month + '-' + data[i].year + '</td>';
                 html += '<td>' + data[i].duplicate + '</td>';
                 html += '<td>';
@@ -630,7 +628,7 @@ function bringTeethList(year = 1400) {
                 html += (data[i].rh == 1 ? '8' : '-') + (data[i].rg == 1 ? '7' : '-') + (data[i].rf == 1 ? '6' : '-') + (data[i].re == 1 ? '5' : '-') + (data[i].rd == 1 ? '4' : '-') + (data[i].rc == 1 ? '3' : '-') + (data[i].rb == 1 ? '2' : '-') + (data[i].ra == 1 ? '1' : '-');
                 html += (data[i].rdh == 1 ? '8' : '-') + (data[i].rdg == 1 ? '7' : '-') + (data[i].rdf == 1 ? '6' : '-') + (data[i].rde == 1 ? '5' : '-') + (data[i].rdd == 1 ? '4' : '-') + (data[i].rdc == 1 ? '3' : '-') + (data[i].rdb == 1 ? '2' : '-') + (data[i].rda == 1 ? '1' : '-');
                 html += '</td>';
-                html += '<td>' + (data[i].duplicate == 0 || data[i].duplicate == null || data[i].fees == 0  ? data[i].fees : data[i].duplicate * data[i].fees) + '</td>';
+                html += '<td>' + (data[i].fees) + '</td>';
                 html += '<td class="text-right">';
                 html += '<?php if ($this->rbac->hasPrivilege('student_count_widget', 'can_view')) { ?>';
                 html += '<a onclick="get(' + data[i].id + ')" data-target="#editmyModal" class="btn btn-default btn-xs" data-toggle="tooltip" title="<?php echo $this->lang->line('edit'); ?>"><span class="label label-success"><i class="fa fa-pencil"></i></span></a>';
@@ -692,7 +690,6 @@ function exportToExcel(data) {
         'day': undefined, // Exclude day, month, year from headers
         'month': undefined,
         'year': undefined,
-        'fees': 'قمت فی ',
     };
 
     // Transform each object's properties to match the desired headers
@@ -711,7 +708,7 @@ function exportToExcel(data) {
         transformedItem["موقعیت چپ"] = (item.lh == 1 ? '8' : '-') + (item.lg == 1 ? '7' : '-') + (item.lf == 1 ? '6' : '-') + (item.le == 1 ? '5' : '-') + (item.ld == 1 ? '4' : '-') + (item.lc == 1 ? '3' : '-') + (item.lb == 1 ? '2' : '-') + (item.la == 1 ? '1' : '-')
         transformedItem["موقعیت راست"] = (item.rdh == 1 ? '8' : '-') + (item.rdg == 1 ? '7' : '-') + (item.rdf == 1 ? '6' : '-') + (item.rde == 1 ? '5' : '-') + (item.rdd == 1 ? '4' : '-') + (item.rdc == 1 ? '3' : '-') + (item.rdb == 1 ? '2' : '-') + (item.rda == 1 ? '1' : '-');
         transformedItem['تاریخ'] = item.day + '-' + item.month + '-' + item.year;
-        transformedItem['قمت مجموعی'] = item.duplicate == 0 || item.duplicate == null || item.fees == 0 ? item.fees : item.duplicate * item.fees;
+        transformedItem['قمت مجموعی'] = item.fees;
         return transformedItem;
     });
 
