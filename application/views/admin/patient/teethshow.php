@@ -607,7 +607,6 @@ function bringTeethList(year = 1400) {
         type: "GET",
         success: function (response) {
             var data = JSON.parse(response);
-            console.log("data in success", data)
             // Create a new HTML string containing the returned data
             var html = '';
             var totalFees = 0;
@@ -677,6 +676,7 @@ function bringTeethList(year = 1400) {
 }
 
 function exportToExcel(data) {
+    console.log(data)
     if (!data || !Array.isArray(data)) {
         console.error('Data is undefined, null, or not in the correct format.'); 
         return;
@@ -711,7 +711,7 @@ function exportToExcel(data) {
         transformedItem["موقعیت چپ"] = (item.lh == 1 ? '8' : '-') + (item.lg == 1 ? '7' : '-') + (item.lf == 1 ? '6' : '-') + (item.le == 1 ? '5' : '-') + (item.ld == 1 ? '4' : '-') + (item.lc == 1 ? '3' : '-') + (item.lb == 1 ? '2' : '-') + (item.la == 1 ? '1' : '-')
         transformedItem["موقعیت راست"] = (item.rdh == 1 ? '8' : '-') + (item.rdg == 1 ? '7' : '-') + (item.rdf == 1 ? '6' : '-') + (item.rde == 1 ? '5' : '-') + (item.rdd == 1 ? '4' : '-') + (item.rdc == 1 ? '3' : '-') + (item.rdb == 1 ? '2' : '-') + (item.rda == 1 ? '1' : '-');
         transformedItem['تاریخ'] = item.day + '-' + item.month + '-' + item.year;
-        transformedItem['قمت مجموعی'] = item.duplicate == 0 || data[i].duplicate == null || data[i].fees == 0 ? item.fees : item.duplicate * item.fees;
+        transformedItem['قمت مجموعی'] = item.duplicate == 0 || item.duplicate == null || item.fees == 0 ? item.fees : item.duplicate * item.fees;
         return transformedItem;
     });
 
