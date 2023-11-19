@@ -24,7 +24,7 @@
         <div class="row">
             <div class="col-md-12"> 
                 <div class="box box-primary" id="tachelist">
-                <h3 class="box-title titlefix margin-12" style="font-size: 20px; margin: 12px;">لیست تمام ساخت دندان ها</h3>
+                    <h3 class="box-title titlefix margin-12" style="font-size: 20px; margin: 12px;">لیست تمام ساخت دندان ها</h3>
                     <div class="box-header">
                         <div class="col-md-6">
                         <select name="teeth_id" class="form-control" id="teeth_id" onchange="bringTeethList(this.value);" style="font-size: 20px;">
@@ -59,6 +59,17 @@
                                     </tr>
                                 </thead>
                                 <tbody id="charge_table_body">
+                                <div id="loading" style="display: none; color: green">
+                                <div class="spinner" style="border:
+                                        border-radius: 50%;
+                                        width: 200px;
+                                        height: 20px;
+                                        animation: spin 1s linear infinite;
+                                        margin: 20px auto;">
+                                        درحال جستجو... لطفا منتظر باشید
+                                    
+                                </div>
+                                </div>
                                 </tbody>
 
                                 <!-- Add this row at the bottom of your table body -->
@@ -599,6 +610,7 @@
             }
 
 function bringTeethList(year = 1400) {
+    $('#loading').show();
     $.ajax({
         "processing": true,
         "serverSide": true,
@@ -645,6 +657,7 @@ function bringTeethList(year = 1400) {
             html += '</tr>';
             $('#charge_table_body').html(html);
 
+            $('#loading').hide();
            
 
             // Initialize DataTable
@@ -669,6 +682,7 @@ function bringTeethList(year = 1400) {
         },
         error: function (erro) {
             console.log("test/erro", erro);
+            $('#loading').hide();
         },
     });
 }
