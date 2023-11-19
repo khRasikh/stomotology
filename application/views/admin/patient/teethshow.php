@@ -601,6 +601,8 @@
 
 function bringTeethList(year = 1400) {
     $.ajax({
+        "processing": true,
+        "serverSide": true,
         url: '<?php echo base_url(); ?>admin/patient/bringTeeths/' + year,
         type: "GET",
         success: function (response) {
