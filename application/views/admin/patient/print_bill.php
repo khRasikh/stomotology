@@ -20,9 +20,7 @@
 <body> 
 <center>
 <table class="border-top"  class="printablea4" width="100%">
-<img style="
-    height: 58px;" src="<?php echo base_url(); ?>uploads/hospital_content/logo/so1.png">
-	<h4 style="margin-top: 10px;margin-bottom: -30px;text-align: center;" >شفاخانه ستوماتولوژی<br> دندانسازی ایمل<br>دریافت پول<br></h4>
+	<h4 style="margin-top: 10px;margin-bottom: -30px;text-align: center;" >لابراتوار ستوماتولوژی<br> دندانسازی ایمل<br>دریافت پول<br></h4>
 
 </table>
 <table class="border"  class="printablea4" width="100%">

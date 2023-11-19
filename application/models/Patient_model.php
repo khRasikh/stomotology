@@ -127,8 +127,6 @@ class Patient_model extends CI_Model
 
     public function searchByMonth()
     {
-        $page_number = 2; 
-        $per_page = 10; 
         $this->db->select('patients.*,opd_details.appointment_date,opd_details.case_type,
         opd_details.patient_id,staff.name as sname,
                         staff.surname')->from('patients');
@@ -139,7 +137,6 @@ class Patient_model extends CI_Model
         $this->db->where('patients.patient_type', 'permanent');
         $this->db->order_by('patients.id', 'desc');
         $this->db->group_by('opd_details.patient_id');
-        $this->db->limit($per_page, $page_number);
         $query = $this->db->get();
         return $query->result_array();
     }
