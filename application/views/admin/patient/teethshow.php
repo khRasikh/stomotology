@@ -688,7 +688,7 @@ function bringTeethList(year = 1400) {
 }
 
 function exportToExcel(data) {
-    console.log(data)
+    // console.log(data)
     if (!data || !Array.isArray(data)) {
         console.error('Data is undefined, null, or not in the correct format.'); 
         return;
@@ -721,8 +721,8 @@ function exportToExcel(data) {
         // Concatenate day, month, and year into a single property 'تاریخ' (Date)
         transformedItem["موقعیت چپ"] = (item.lh == 1 ? '8' : '-') + (item.lg == 1 ? '7' : '-') + (item.lf == 1 ? '6' : '-') + (item.le == 1 ? '5' : '-') + (item.ld == 1 ? '4' : '-') + (item.lc == 1 ? '3' : '-') + (item.lb == 1 ? '2' : '-') + (item.la == 1 ? '1' : '-')
         transformedItem["موقعیت راست"] = (item.rdh == 1 ? '8' : '-') + (item.rdg == 1 ? '7' : '-') + (item.rdf == 1 ? '6' : '-') + (item.rde == 1 ? '5' : '-') + (item.rdd == 1 ? '4' : '-') + (item.rdc == 1 ? '3' : '-') + (item.rdb == 1 ? '2' : '-') + (item.rda == 1 ? '1' : '-');
-        transformedItem['تاریخ'] = item.day + '-' + item.month + '-' + item.year;
-        transformedItem['قمت مجموعی'] = item.fees;
+        transformedItem['قمت مجموعی'] = !isNaN(parseFloat(item.fees)) ? parseFloat(item.fees) : 0;
+        transformedItem['تعداد'] = !isNaN(parseInt(item.duplicate)) ? parseInt(item.duplicate) : 0;
         return transformedItem;
     });
 
