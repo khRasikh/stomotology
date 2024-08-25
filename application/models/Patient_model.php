@@ -125,18 +125,81 @@ class Patient_model extends CI_Model
         return $query->result_array();
     }
 
-    public function searchByMonth()
+    public function countPatients()
     {
-        $this->db->select('patients.*,opd_details.appointment_date,opd_details.case_type,
-        opd_details.patient_id,staff.name as sname,
-                        staff.surname')->from('patients');
+        $this->db->select('COUNT(DISTINCT opd_details.patient_id) as total');
+        $this->db->from('patients');
         $this->db->join('opd_details', 'patients.id = opd_details.patient_id', "inner");
-        // $this->db->join('staff', 'staff.id = opd_details.cons_doctor', "inner");
+        $this->db->where('patients.is_active', 'yes');
+        $this->db->where('patients.patient_type', 'permanent');
+    
+        $query = $this->db->get();
+        $result = $query->row();
+        return $result->total;
+    }
+    
+
+    public function searchByMonth($limit, $offset)
+    {
+        $this->db->select('patients.*, opd_details.appointment_date, opd_details.case_type,
+            opd_details.patient_id, staff.name as sname, staff.surname')
+            ->from('patients');
+        $this->db->join('opd_details', 'patients.id = opd_details.patient_id', "inner");
         $this->db->join('staff', 'staff.id = patients.payment', "inner");
         $this->db->where('patients.is_active', 'yes');
         $this->db->where('patients.patient_type', 'permanent');
-        $this->db->order_by('patients.id', 'desc');
+        
+        // Order by 'updated_at' first, and fallback to 'created_at' if 'updated_at' is not present
+        $this->db->order_by('patients.updated_at', 'desc'); // First preference
+        $this->db->order_by('patients.created_at', 'desc'); // Fallback
+    
         $this->db->group_by('opd_details.patient_id');
+        $this->db->limit($limit, $offset); // Pagination
+        
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+    
+// Count patients based on search term
+public function countSearchPatients($search_text)
+{
+    $this->db->like('patients.hmis_no', $search_text);
+    $this->db->or_like('patients.patient_name', $search_text);
+    $this->db->or_like('patients.guardian_name', $search_text);
+    $this->db->or_like('patients.id', $search_text);
+    $this->db->or_like('patients.address', $search_text);
+    $this->db->or_like('patients.district', $search_text);
+    $this->db->or_like('patients.province', $search_text);
+    $this->db->from('patients');
+
+    return $this->db->count_all_results();
+}
+
+// Fetch patients based on search term with pagination
+    public function searchPatients($search_text, $limit, $offset)
+    {
+        $this->db->select('patients.*, opd_details.appointment_date, opd_details.case_type,
+            opd_details.patient_id, staff.name as sname, staff.surname')
+            ->from('patients');
+        $this->db->join('opd_details', 'patients.id = opd_details.patient_id', "inner");
+        $this->db->join('staff', 'staff.id = patients.payment', "inner");
+        $this->db->where('patients.is_active', 'yes');
+        $this->db->where('patients.patient_type', 'permanent');
+
+        // Add search conditions
+        $this->db->like('patients.hmis_no', $search_text);
+        $this->db->or_like('patients.patient_name', $search_text);
+        $this->db->or_like('patients.guardian_name', $search_text);
+        $this->db->or_like('patients.id', $search_text);
+        $this->db->or_like('patients.address', $search_text);
+        $this->db->or_like('patients.district', $search_text);
+        $this->db->or_like('patients.province', $search_text);
+        // Order and pagination
+        $this->db->order_by('patients.updated_at', 'desc');
+        $this->db->order_by('patients.created_at', 'desc');
+        $this->db->group_by('opd_details.patient_id');
+        $this->db->limit($limit, $offset);
+
         $query = $this->db->get();
         return $query->result_array();
     }

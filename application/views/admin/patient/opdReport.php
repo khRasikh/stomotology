@@ -1,6 +1,9 @@
 <?php
 $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
 ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <style type="text/css">
     /*REQUIRED*/
     .carousel-row {
@@ -70,6 +73,64 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
         height: 5px;
         display: block;
     }
+
+/* Ensure pagination is RTL */
+.pagination {
+    direction: rtl;
+    display: flex;
+    justify-content: flex-start; /* Start pagination from the right */
+}
+
+.pagination li {
+    margin: 0 3px;
+}
+
+.pagination li a, .pagination li span {
+    display: inline-block;
+    padding: 2px 4px;
+    text-decoration: none;
+    background-color: #f8f9fa;
+}
+
+.pagination li.active span {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.record-pagination-container {
+    display: flex;
+    justify-content: space-between; /* Distribute space between the two elements */
+    align-items: center; /* Align vertically centered */
+    color: #007bff
+}
+
+.record-pagination-container-one {
+    display: flex;
+    justify-content: space-between; /* Distribute space between the two elements */
+    align-items: center; /* Align vertically centered */
+    margin-left: 19px;
+}
+
+
+
+.custom-thead th {
+        background-color: lightblue !important; /* Dark background */
+        font-weight: bold;         /* Bold text */
+        padding: 8px 12px;         /* Padding for spacing */
+        text-align: center;        /* Center the text */
+        border: 1px solid #dee2e6; /* Border for cell separation */
+        white-space: nowrap;       /* Prevent text wrapping */
+        overflow: hidden;          /* Hide overflow if text is too long */
+        text-overflow: ellipsis;   /* Add ellipsis for long text */
+    }
+.custom-tbody tr{
+    padding: 8px 12px;         /* Padding for spacing */
+    text-align: center;        /* Center the text */
+    border: 1px solid #dee2e6; /* Border for cell separation */
+    white-space: nowrap;       /* Prevent text wrapping */
+    overflow: hidden;          /* Hide overflow if text is too long */
+    text-overflow: ellipsis;   /* Add ellipsis for long text */
+}
 </style>
 
 <div class="content-wrapper" style="min-height: 946px;">
@@ -78,20 +139,25 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
         <div class="row">
             <div class="col-md-12">
                 <div class="box box-primary">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">گذارش کلی از رسید مراجعین</h3>
-                    </div>
+                <div class="box-header with-border ">
+                        <?php if ($title == 'old_patient') { ?>
+                                <h3 class="box-title titlefix"><?php echo $this->lang->line('opd') . " " . $this->lang->line('old') . " " . $this->lang->line('patient') ?></h3>
+                        <?php } else { ?>
+                                <h3 class="box-title titlefix">لیست تمام رسید ها از داکتران - این رسیدات را  در مدت زمان های مختلف جستجو کنید</h3>
+
+                        <?php } ?>
+                    </div> 
 
                     <form role="form" action="<?php echo site_url('admin/patient/opd_report') ?>" method="post" class="">
                         <div class="box-body row">
 
                             <?php echo $this->customlib->getCSRF(); ?>
 
-                            <div class="col-sm-6 col-md-4" >
+                            <div class="col-sm-3 col-md-3" >
                                 <div class="form-group">
                                     <label><?php echo $this->lang->line('search') . " " . $this->lang->line('type'); ?></label><small class="req"> *</small>
                                     <select class="form-control" name="search_type" onchange="showdate(this.value)">
-                                        <option value=""><?php echo $this->lang->line('all') ?></option>
+                                        <option value="all_time"><?php echo $this->lang->line('all') ?></option>
                                         <?php foreach ($searchlist as $key => $search) {
                                             ?>
                                             <option value="<?php echo $key ?>" <?php
@@ -99,66 +165,67 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                 echo "selected";
                                             }
                                             ?>><?php echo $search ?></option>
-<?php } ?>
+                                        <?php } ?>
                                     </select>
                                     <span class="text-danger"><?php echo form_error('search_type'); ?></span>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-4" id="fromdate" style="display: none">
+                            <div class="col-sm-3 col-md-3" id="fromdate" style="display: none">
                                 <div class="form-group">
                                     <label><?php echo $this->lang->line('date_from'); ?></label><small class="req"> *</small>
                                     <input id="date_from" name="date_from" placeholder="" type="text" class="form-control date" value="<?php echo set_value('date_from', date($this->customlib->getSchoolDateFormat())); ?>"  />
                                     <span class="text-danger"><?php echo form_error('date_from'); ?></span>
                                 </div>
                             </div> 
-                            <div class="col-sm-6 col-md-4" id="todate" style="display: none">
+                            <div class="col-sm-3 col-md-3" id="todate" style="display: none">
                                 <div class="form-group">
                                     <label><?php echo $this->lang->line('date_to'); ?></label><small class="req"> *</small>
                                     <input id="date_to" name="date_to" placeholder="" type="text" class="form-control date" value="<?php echo set_value('date_to', date($this->customlib->getSchoolDateFormat())); ?>"  />
                                     <span class="text-danger"><?php echo form_error('date_to'); ?></span>
                                 </div>
                             </div> 
-                            <div class="form-group">
-                                <div class="col-sm-12">
-                                    <button type="submit" name="search" value="search_filter" class="btn btn-primary btn-sm checkbox-toggle pull-right"><i class="fa fa-search"></i> <?php echo $this->lang->line('search'); ?></button>
+
+                            <div class="col-sm-3 col-md-3" id="todate">
+                                <div class="form-group">
+                                    <label style="color: #ffff">-</label>
+                                    <button type="submit" name="search" value="search_filter" class="form-control btn btn-primary btn-sm checkbox-toggle pull-right"><i class="fa fa-search"></i> <?php echo $this->lang->line('search'); ?></button>
                                 </div>
-                            </div>
+                            </div> 
+ 
+                        </div>
 
                     </form>
                     <div class="box border0 clear">
-                        <div class="box-header ptbnull">
-                            <!-- <h3 class="box-title titlefix"><i class="fa fa-users"></i> <?php //echo form_error('Opd'); ?> 
-                            <?php
-                            //echo $this->lang->line('patient')." ".$this->lang->line('report')." ";
-                            // if(!empty(($date_from) && ($date_to)))
-                            // { 
-                            // //  echo  $date_from." "."To"." ".$date_to; 
-                            //  }
-                            ?>
-                            </h3> -->
-                        </div>
-                        <div class="box-body table-responsive">
-                            <div class="download_label">گذارش کلی از رسید مراجعین</div>
-                            <table class="table table-striped table-bordered table-hover example">
-                                <thead>
+                    <div class="box-tools pull-center">
+                                <button type="button" class="btn btn-success btn-md" style="margin-right: 12px; " onclick="exportToExcel()">
+                                    <i class="fa fa-list">&nbsp; </i>دانلود به اکسل
+                                </button>
+                                <button type="button" class="btn btn-warning btn-md" style="margin: 12px;" onclick="exportToExcel()">
+                                    <i class="fa fa-list">&nbsp; </i>چاپ 
+                                </button>
+                        </div>  
+                        <div class="box-body table-responsive"> 
+                         
+                            <table class="table table-bordered border-primary table-hover ">
+                                <thead class="custom-thead">
                                     <tr>
                                         <th>تاریخ</th>
                                        <th>شماره مسلسل</th> 
                                         <th>آی دی </th>
                                         <th>نام مراجعه کننده</th>
-                                        <th><?php echo $this->lang->line('age'); ?></th>
+                                        <th><?php echo $this->lang->line('mobile_no'); ?></th>
+                                        <!-- <th><?php echo $this->lang->line('age'); ?></th> -->
                                         <th><?php echo $this->lang->line('gender'); ?></th>
-                                        <!-- <th><?php echo $this->lang->line('mobile_no'); ?></th> -->
                                         <th>نام پدر</th>
                                         <th><?php echo $this->lang->line('address'); ?></th>
                                         <!-- <th><?php echo $this->lang->line('casualty'); ?></th> -->
                                         <!-- <th><?php echo $this->lang->line('refference'); ?></th> -->
                                         <th>گیرنده</th>
-                                        <th>مبلغ رسید-به عدد</th>
-                                        <th>مبلغ رسید-به حروف</th>
+                                        <th> رسید-به عدد</th>
+                                        <th> رسید-به حروف</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="custom-tbody">
                                     <?php
                                     if (empty($resultlist)) {
                                         ?>
@@ -183,7 +250,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                                     <a href="<?php echo base_url(); ?>admin/patient/profile/<?php echo $report['pid']; ?>"><?php echo $report['patient_name'] ?>
                                                     </a>
                                                 </td>
-                                                <td><?php echo $report['age']; ?></td>
+                                                <td><?php echo $report['mobileno']; ?></td>
                                                 <td><?php echo $report['gender']; ?></td>
                                                 <td><?php echo $report['guardian_name']; ?></td>
                                                 <td><?php echo $report['address']; ?></td>
@@ -198,12 +265,20 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                                         ?>
                                     </tbody>
                                     <tr class="box box-solid total-bg" style="font-size: 22px; color: green;">
-                                        <td class="text-right" colspan='14'>مجموع رسید <label style="margin-right: 70%;"><?php echo  $total; ?> افغانی</label>
+                                        <td class="text-right" colspan='14'>  مجموع رسید از  <?php echo "{$total_records}" ?> ثبت  <label style="margin-right: 70%;"><?php echo "{$total_amount}" ?> افغانی</label>
                                         </td>
                                     </tr>
 <?php } ?>
                             </table>
-
+                                <!-- Pagination Links -->
+                                <div class="record-pagination-container-one">
+                                    <div>
+                                        <?php echo $pagination; ?>
+                                    </div>
+                                    <div>
+                                        <?php echo "ثبت {$start_record} الی {$end_record}  از مجموع تعداد {$total_records} رسید عواید"; ?>
+                                    </div>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -232,4 +307,86 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
             $('#todate').hide();
         }
     }
+
+    function exportToExcel() {
+    // Send an AJAX request to the server to fetch the data
+    $.ajax({
+        url: '<?php echo base_url("admin/patient/get_opd_report_data"); ?>', // Your server-side method URL
+        type: 'GET',  // You can use POST as well if needed
+        dataType: 'json',
+        success: function(data) {
+            // Call the function that transforms and exports data to Excel
+            if (data) {
+                generateExcel(data);
+            } else {
+                console.error('No data received from the server');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX request failed:', status, error);
+        }
+    });
+}
+
+function generateExcel(data) {
+    if (!data || !Array.isArray(data)) {
+        console.error('Data is undefined, null, or not in the correct format.');
+        return;
+    }
+
+    const propertyMapping = { 
+        'patient_unique_id': 'شماره مسلسل',
+        'pid': 'آی دی',
+        'patient_name': 'نام مراجعه کننده',
+        'mobileno': 'شماره تلفن همراه',
+        'gender': 'حالت مدنی',
+        'guardian_name': 'نام پدر',
+        'address': 'آدرس',
+        'name': 'گیرنده',
+        'amount': 'رسید-به عدد',
+        'payment_mode': 'رسید-به حروف',
+    };
+
+    let totalAmount = 0;
+    const transformedData = data.map(item => {
+        const transformedItem = {};
+        Object.keys(propertyMapping).forEach(key => {
+            if (key === 'amount') {
+                transformedItem[propertyMapping[key]] = parseFloat(item[key]) || 0; // Convert to float and handle missing values
+                totalAmount += transformedItem[propertyMapping[key]]; // Accumulate total amount
+            } else {
+                transformedItem[propertyMapping[key]] = item[key] || ''; // Handle missing values
+            }
+        });
+
+        transformedItem['تاریخ'] = item.symptoms + '-' + item.casualty + '-' + item.bp;
+
+        return transformedItem;
+    });
+
+    // Create the Excel file
+    const filename = 'رسید مجموعی.xlsx';
+    const headers = Object.values(propertyMapping);
+
+    const worksheet = XLSX.utils.json_to_sheet(transformedData, { header: headers });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'لیست رسید مجموعی از داکتران');
+
+    // Add the total amount row
+    const totalRow = headers.map(header => {
+        return header === 'رسید-به عدد' ? `${totalAmount}` : ''; // Add total amount in the 'amount' column
+    });
+
+    XLSX.utils.sheet_add_aoa(worksheet, [totalRow], { origin: -1 }); // Append totalRow to the end
+
+    XLSX.writeFile(workbook, filename);
+}
+
+
+function generatePositionString(item, ...positions) {
+    return positions.map(pos => item[pos] == 1 ? pos.slice(-1) : '-').join('');
+}
+
+
+
 </script>
