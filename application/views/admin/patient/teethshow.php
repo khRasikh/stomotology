@@ -63,6 +63,11 @@
                         <div class="mailbox-controls">
                         </div>
                         <div class="table-responsive mailbox-messages">
+                        <?php if ($this->rbac->hasPrivilege($title, 'can_add')) { ?>  
+                                    <a  id="add" href="<?php echo base_url('admin/patient/createPatient') ?>" class="btn btn-primary btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-plus"></i>  <?php echo $this->lang->line('add') . " داکتر" ?></a> 
+                                    <a  href="<?php echo base_url('admin/patient/opd_report') ?>" class="btn btn-success btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-list">&nbsp; </i> عواید</a> 
+                                    <a  href="<?php echo base_url('admin/patient/teethlist') ?>" class="btn btn-warning btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-list">&nbsp; </i> مصارف</a> 
+                            <?php } ?> 
                         <table class="table table-striped table-bordered table-hover" id="table_id">
                                 <thead class="custom-thead">
                                     <tr>
@@ -100,7 +105,8 @@
                                         <label id="currentDateLabel"  style="font-size: 18px; color: blue;"><?php echo date(' H:i:s Y-m-d'); ?></label>
                                     </td>
                                 </tr>
-                                <button id="export_button_container">فایل اکسل</button>
+                                
+                                <button id="export_button_container" class="btn btn-primary btn-md" style="margin-bottom: 10px; border-radius: 8px;" >فایل اکسل</button>
                             </table>
                         </div>
                     </div>

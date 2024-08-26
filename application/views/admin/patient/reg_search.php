@@ -95,20 +95,23 @@ $genderList = $this->customlib->getGender();
                                 <h3 class="box-title titlefix">لیست داکتران مراجعه کننده</h3>
 
                         <?php } ?>
-                        <div class="box-tools pull-right">
-                                <a  href="<?php echo base_url('admin/patient/getAllDoctors') ?>" class="btn btn-success btn-sm"><i class="fa fa-list">&nbsp; </i>لیست مجموعی داکتران </a> 
-                            <?php if ($this->rbac->hasPrivilege($title, 'can_add')) { ?>   
-                                    <a  id="add" href="<?php echo base_url('admin/patient/createPatient') ?>" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>  <?php echo $this->lang->line('add') . " داکتر" ?></a> 
-
-                            <?php } ?> 
-
-                        </div>    
+                           
                     </div><!-- /.box-header -->
 
+                    
                     <?php
                     if (isset($resultlist)) {
                         ?>
                         <div class="box-body table-responsive">
+                        <div class="buttons" style="margin: 10px">
+                        <!-- <a  href="<?php echo base_url('admin/patient/getAllDoctors') ?>" class="btn btn-success btn-sm"><i class="fa fa-list">&nbsp; </i>لیست مجموعی داکتران </a>  -->
+                       
+                            <?php if ($this->rbac->hasPrivilege($title, 'can_add')) { ?>  
+                                    <a  id="add" href="<?php echo base_url('admin/patient/createPatient') ?>" class="btn btn-primary btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-plus"></i>  <?php echo $this->lang->line('add') . " داکتر" ?></a> 
+                                    <a  href="<?php echo base_url('admin/patient/opd_report') ?>" class="btn btn-success btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-list">&nbsp; </i> عواید</a> 
+                                    <a  href="<?php echo base_url('admin/patient/teethlist') ?>" class="btn btn-warning btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-list">&nbsp; </i> مصارف</a> 
+                            <?php } ?> 
+                        </div> 
                                 <table class="table table-bordered border-primary table-hover custom-table">
                                     <thead class="custom-thead">
                                         <tr>

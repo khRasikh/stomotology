@@ -1814,7 +1814,7 @@ class patient extends Admin_Controller
         'JOIN patients ON opd_details.patient_id = patients.id'
     );
     $table_name = "opd_details";
-    $search_type = $this->input->post("search_type") ? $this->input->post("search_type") : "today";
+    $search_type = $this->input->post("search_type") ? $this->input->post("search_type") : "all_time";
 
     // Get the current page number from the URL
     $page = ($this->uri->segment(4)) ? $this->uri->segment(4) : 0;
@@ -1825,6 +1825,8 @@ class patient extends Admin_Controller
 
     // Fetch the total record count
     $results = $this->report_model->countSearchReport($select, $join, $table_name, $search_type, 'opd_details', 'appointment_date');
+     
+
     $total_rows = $results['total_count'];
     $total_amount = $results['total_amount'];
  
@@ -1860,22 +1862,25 @@ public function get_opd_report_data()
         access_denied();
     }
 
-    // Fetch all the data (without pagination)
-    $select = 'opd_details.*, staff.name, staff.surname, patients.id as pid, patients.patient_name, 
-    patients.patient_unique_id, patients.guardian_name, patients.address, patients.admission_date, 
-    patients.gender, patients.mobileno, patients.age';
-    $join = array(
-    'JOIN staff ON opd_details.cons_doctor = staff.id',
-    'JOIN patients ON opd_details.patient_id = patients.id'
-    );
-    $table_name = "opd_details";
     $search_type = $this->input->post("search_type") ? $this->input->post("search_type") : "all_time";
 
-    $resultlist = $this->report_model->searchReport($select, $join, $table_name, $search_type, 'opd_details', 'appointment_date', 10000, 5);
+    // Continue with your query and model call
+    $select = 'opd_details.*, staff.name, staff.surname, patients.id as pid, patients.patient_name, 
+               patients.patient_unique_id, patients.guardian_name, patients.address, patients.admission_date, 
+               patients.gender, patients.mobileno, patients.age';
+    $join = array(
+        'JOIN staff ON opd_details.cons_doctor = staff.id',
+        'JOIN patients ON opd_details.patient_id = patients.id'
+    );
+    $table_name = "opd_details";
+
+    // Call the report model with the search_type parameter
+    $resultlist = $this->report_model->searchReport($select, $join, $table_name, $search_type, 'opd_details', 'appointment_date', 1000000, 0);
 
     // Return data as JSON
     echo json_encode($resultlist);
 }
+
 
   public function ipdReport()
   {

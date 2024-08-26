@@ -3,6 +3,8 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
 ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/2.5.1/jspdf.plugin.autotable.min.js"></script>
+
 
 <style type="text/css">
     /*REQUIRED*/
@@ -156,7 +158,7 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                             <div class="col-sm-3 col-md-3" >
                                 <div class="form-group">
                                     <label><?php echo $this->lang->line('search') . " " . $this->lang->line('type'); ?></label><small class="req"> *</small>
-                                    <select class="form-control" name="search_type" onchange="showdate(this.value)">
+                                    <select class="form-control" id="search_type" name="search_type" onchange="showdate(this.value)">
                                         <option value="all_time"><?php echo $this->lang->line('all') ?></option>
                                         <?php foreach ($searchlist as $key => $search) {
                                             ?>
@@ -197,10 +199,13 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
                     </form>
                     <div class="box border0 clear">
                     <div class="box-tools pull-center">
-                                <button type="button" class="btn btn-success btn-md" style="margin-right: 12px; " onclick="exportToExcel()">
+                                <button type="button" class="btn btn-success btn-md" style="margin-bottom: 10px; border-radius: 8px; margin-right: 10px" onclick="exportToExcel()">
                                     <i class="fa fa-list">&nbsp; </i>دانلود به اکسل
                                 </button>
-                                <button type="button" class="btn btn-warning btn-md" style="margin: 12px;" onclick="exportToExcel()">
+                                <a href="<?php echo base_url(); ?>/admin/patient/reg_search" class="btn btn-primary btn-md" style="margin-bottom: 10px; border-radius: 8px;">
+                                    <i class="fa fa-users">&nbsp; </i> لیست داکتران
+                                </a>
+                                <button type="button" class="btn btn-warning btn-md" style="margin-bottom: 10px; border-radius: 8px;" onclick="exportToPDF()">
                                     <i class="fa fa-list">&nbsp; </i>چاپ 
                                 </button>
                         </div>  
@@ -307,15 +312,14 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
             $('#todate').hide();
         }
     }
-
-    function exportToExcel() {
-    // Send an AJAX request to the server to fetch the data
+function exportToExcel() {
+    var searchType = document.getElementById('search_type').value;
     $.ajax({
-        url: '<?php echo base_url("admin/patient/get_opd_report_data"); ?>', // Your server-side method URL
-        type: 'GET',  // You can use POST as well if needed
+        url: '<?php echo base_url("admin/patient/get_opd_report_data"); ?>',  // Your server-side method URL
+        type: 'POST',  // Changed to POST since we are sending data
         dataType: 'json',
+        data: { search_type: searchType },  // Passing search_type as a parameter
         success: function(data) {
-            // Call the function that transforms and exports data to Excel
             if (data) {
                 generateExcel(data);
             } else {
@@ -324,9 +328,11 @@ $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
         },
         error: function(xhr, status, error) {
             console.error('AJAX request failed:', status, error);
+            console.error('Response:', xhr.responseText);
         }
     });
 }
+
 
 function generateExcel(data) {
     if (!data || !Array.isArray(data)) {
@@ -359,8 +365,7 @@ function generateExcel(data) {
             }
         });
 
-        transformedItem['تاریخ'] = item.symptoms + '-' + item.casualty + '-' + item.bp;
-
+        transformedItem['تاریخ'] = item.bp + '-' + item.symptoms + '-' + item.casualty;
         return transformedItem;
     });
 
@@ -382,11 +387,69 @@ function generateExcel(data) {
     XLSX.writeFile(workbook, filename);
 }
 
-
 function generatePositionString(item, ...positions) {
     return positions.map(pos => item[pos] == 1 ? pos.slice(-1) : '-').join('');
 }
 
+function exportToPDF(data) {
+    const { jsPDF } = window.jspdf;
+    
+    if (!data || !Array.isArray(data)) {
+        console.error('Data is undefined, null, or not in the correct format.');
+        return;
+    }
+    
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    
+    let yOffset = 10; // Initial y offset
+    
+    doc.setFontSize(12);
+    doc.text('لیست رسید مجموعی از داکتران', pageWidth / 2, yOffset, { align: 'center' });
+    yOffset += 10;
+
+    // Define columns
+    const columns = [
+        'تاریخ', 'شماره مسلسل', 'آی دی', 'نام مراجعه کننده', 
+        'شماره تلفن همراه', 'حالت مدنی', 'نام پدر', 'آدرس', 
+        'گیرنده', 'رسید-به عدد', 'رسید-به حروف'
+    ];
+    
+    // Map data to rows
+    const dataRows = data.map(item => [
+        `${item.bp}-${item.symptoms}-${item.casualty}`,
+        item.patient_unique_id,
+        item.pid,
+        item.patient_name,
+        item.mobileno,
+        item.gender,
+        item.guardian_name,
+        item.address,
+        item.name,
+        item.amount,
+        item.payment_mode
+    ]);
+    
+    // Generate table
+    doc.autoTable({
+        head: [columns],
+        body: dataRows,
+        startY: yOffset,
+        theme: 'striped',
+        styles: { overflow: 'linebreak' },
+        headStyles: { fillColor: [0, 0, 0] }, // Black header background
+        columnStyles: { 9: { halign: 'right' } } // Align 'amount' column to right
+    });
+    
+    // Add total amount
+    const totalAmount = data.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+    yOffset = doc.autoTable.previous.finalY + 10; // Update yOffset for footer
+    doc.text(`مجموع رسید: ${totalAmount}`, pageWidth / 2, yOffset, { align: 'center' });
+    
+    // Save PDF
+    doc.save('report.pdf');
+}
 
 
 </script>
