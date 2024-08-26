@@ -162,7 +162,7 @@
                         <div class="pull-right">
                             <?php if (($this->rbac->hasPrivilege('ipd_patient', 'can_view')) || ($this->rbac->hasPrivilege('opd_patient', 'can_view')) || ($this->rbac->hasPrivilege('ot_patient', 'can_view'))) { ?>
                                 <!-- <form class="navbar-form navbar-left search-form" role="search"  action="<?php echo site_url('admin/patient/reg_search'); ?>" method="POST"> -->
-                                <form class="navbar-form navbar-left search-form" role="search"  action="<?php echo site_url('admin/admin/search'); ?>" method="POST">
+                                <form class="navbar-form navbar-left search-form" role="search"  action="<?php echo site_url('admin/patient/reg_search'); ?>" method="POST">
                                     <?php echo $this->customlib->getCSRF(); ?>
                                     <div class="input-group" style="padding-top:3px;">
                                         <input type="text" name="search_text" class="form-control search-form search-form3" placeholder="آی دی داکتر را جستجو کنید">
@@ -174,61 +174,6 @@
                             <?php } ?>
                             <div class="navbar-custom-menu">
                                 <ul class="nav navbar-nav headertopmenu">
-                                    <!-- <li class="">
-                                        <?php if ($this->rbac->hasPrivilege('bed_status', 'can_view')) { ?><a  data-target="modal" href="#" id='beddata' data-loading-text="<i class='fa fa-spinner fa-spin '></i> Loading" onclick="getbedstatus()"><i class="fas fa-bed cal15"></i> <span class="spanDM"><?php echo $this->lang->line('bed') . " " . $this->lang->line('status'); ?></span></a>
-
-                                        </li> -->
-                                        <?php
-                                    }
-                                    if ($this->module_lib->hasActive('calendar_to_do_list')) {
-                                        if ($this->rbac->hasPrivilege('calendar_to_do_list', 'can_view')) {
-                                            ?>
-                                            <li class="cal15"><a href="<?php echo base_url() ?>admin/calendar/events" title="<?php echo $this->lang->line('calendar') ?>"><i class="fa fa fa-calendar"></i></a></li>
-                                            <?php
-                                        }
-                                    }
-                                    ?>
-                                    <?php
-                                    if ($this->module_lib->hasActive('calendar_to_do_list')) {
-                                        if ($this->rbac->hasPrivilege('calendar_to_do_list', 'can_view')) {
-                                            ?>
-                                            <li class="dropdown">
-                                                <a href="#" title="<?php echo $this->lang->line('task') ?>" class="dropdown-toggle todoicon" data-toggle="dropdown">
-                                                    <i class="fa fa-check-square-o"></i>
-                                                    <?php
-                                                    $userdata = $this->customlib->getUserData();
-
-                                                    $count = $this->customlib->countincompleteTask($userdata["id"]);
-                                                    if ($count > 0) {
-                                                        ?>
-
-                                                        <span class="todo-indicator"><?php echo $count ?></span>
-                                                    <?php } ?>
-                                                </a>
-                                                <ul class="dropdown-menu menuboxshadow widthMo250">
-
-                                                    <li class="todoview plr10 ssnoti"><?php echo $this->lang->line('today_you_have'); ?> <?php echo $count; ?> <?php echo $this->lang->line('pending_task'); ?><a href="<?php echo base_url() ?>admin/calendar/events" class="pull-right pt0"><?php echo $this->lang->line('view'); ?> <?php echo $this->lang->line('all'); ?></a></li>
-                                                    <li>
-                                                        <ul class="todolist">
-                                                            <?php
-                                                            $tasklist = $this->customlib->getincompleteTask($userdata["id"]);
-                                                            foreach ($tasklist as $key => $value) {
-                                                                ?>
-                                                                <li><div class="checkbox">
-                                                                        <label><input type="checkbox" id="newcheck<?php echo $value["id"] ?>" onclick="markc('<?php echo $value["id"] ?>')" name="eventcheck"  value="<?php echo $value["id"]; ?>"><?php echo $value["event_title"] ?></label>
-                                                                    </div></li>
-                                                            <?php } ?>
-
-                                                        </ul>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                            <?php
-                                        }
-                                    }
-                                    ?>
-
-
                                     <?php
                                     $file = "";
                                     $result = $this->customlib->getUserData();

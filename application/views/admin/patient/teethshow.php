@@ -16,6 +16,26 @@
 <!-- DataTables JavaScript -->
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 
+<style>
+.custom-thead th {
+        background-color: lightblue !important; /* Dark background */
+        font-weight: bold;         /* Bold text */
+        padding: 8px 12px;         /* Padding for spacing */
+        text-align: center;        /* Center the text */
+        border: 1px solid #dee2e6; /* Border for cell separation */
+        white-space: nowrap;       /* Prevent text wrapping */
+        overflow: hidden ;          /* Hide overflow if text is too long */
+        text-overflow: ellipsis;   /* Add ellipsis for long text */
+    }
+    .custom-tbody tr {
+    padding: 8px 12px;         /* Padding for spacing */
+    text-align: center;        /* Center the text */
+    border: 1px solid #dee2e6; /* Border for cell separation */
+    white-space: nowrap;       /* Prevent text wrapping */
+    overflow: hidden !important;          /* Hide overflow if text is too long */
+    text-overflow: hidden;   /* Add ellipsis for long text */
+}
+</style>
 
 <div class="content-wrapper" style="min-height: 946px;">  
  
@@ -43,8 +63,13 @@
                         <div class="mailbox-controls">
                         </div>
                         <div class="table-responsive mailbox-messages">
+                        <?php if ($this->rbac->hasPrivilege($title, 'can_add')) { ?>  
+                                    <a  id="add" href="<?php echo base_url('admin/patient/createPatient') ?>" class="btn btn-primary btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-plus"></i>  <?php echo $this->lang->line('add') . " داکتر" ?></a> 
+                                    <a  href="<?php echo base_url('admin/patient/opd_report') ?>" class="btn btn-success btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-list">&nbsp; </i> عواید</a> 
+                                    <a  href="<?php echo base_url('admin/patient/teethlist') ?>" class="btn btn-warning btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-list">&nbsp; </i> مصارف</a> 
+                            <?php } ?> 
                         <table class="table table-striped table-bordered table-hover" id="table_id">
-                                <thead style="background-color: #f2f2f2;">
+                                <thead class="custom-thead">
                                     <tr>
                                         <th style="vertical-align: middle;">آی دی</th>
                                         <th style="vertical-align: middle;">نام</th>
@@ -58,7 +83,7 @@
                                         <th style="vertical-align: middle; text-align: right;">عمل</th>
                                     </tr>
                                 </thead>
-                                <tbody id="charge_table_body">
+                                <tbody id="charge_table_body" class="custom-tbody">
                                 <div id="loading" style="display: none; color: green">
                                 <div class="spinner" style="border:
                                         border-radius: 50%;
@@ -80,7 +105,8 @@
                                         <label id="currentDateLabel"  style="font-size: 18px; color: blue;"><?php echo date(' H:i:s Y-m-d'); ?></label>
                                     </td>
                                 </tr>
-                                <button id="export_button_container">فایل اکسل</button>
+                                
+                                <button id="export_button_container" class="btn btn-primary btn-md" style="margin-bottom: 10px; border-radius: 8px;" >فایل اکسل</button>
                             </table>
                         </div>
                     </div>

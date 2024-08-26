@@ -301,7 +301,7 @@
                                     if ($this->module_lib->hasActive('OPD')) {
                                         if ($this->rbac->hasPrivilege('opd_report', 'can_view')) {
                                             ?>
-                                            <li class="<?php echo set_Submenu('admin/patient/opd_report'); ?>"><a href="<?php echo base_url(); ?>admin/patient/opd_report"><i class="fas fa-angle-right"></i> گذارش کلی در آمد</a></li>
+                                            <li class="<?php echo set_Submenu('admin/patient/opd_report'); ?>"><a href="<?php echo base_url(); ?>admin/patient/opd_report"><i class="fas fa-angle-right"></i>عواید</a></li>
                                             <?php
                                         } }
 

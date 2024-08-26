@@ -84,7 +84,7 @@ $autoload['drivers'] = array();
   |
   |	$autoload['helper'] = array('url', 'file');
  */
-$autoload['helper'] = array('url', 'file', 'menu', 'security');
+$autoload['helper'] = array('url', 'file', 'menu', 'security', 'pagination_helper'); // Combine all helpers here
 
 /*
   | -------------------------------------------------------------------
@@ -128,3 +128,4 @@ $autoload['language'] = array();
   |	$autoload['model'] = array('first_model' => 'first');
  */
 $autoload['model'] = array('staff_model', 'setting_model', 'language_model', 'admin_model', 'smsconfig_model', 'langpharses_model', 'expense_model', 'expensehead_model', 'content_model', 'user_model', 'notification_model', 'paymentsetting_model', 'payroll_model', 'department_model', 'designation_model', 'emailconfig_model', 'income_model', 'incomehead_model', 'itemcategory_model', 'item_model', 'messages_model', 'itemstore_model', 'itemsupplier_model', 'notificationsetting_model', 'itemstock_model', 'itemissue_model', 'userlog_model', 'cms_program_model', 'cms_menu_model', 'cms_media_model', 'cms_page_model', 'cms_menuitems_model', 'cms_page_content_model', 'role_model', 'calendar_model', 'userpermission_model', 'staffroles_model', 'staffattendancemodel', 'rolepermission_model', 'timeline_model', 'Module_model', 'patient_model', 'Floor_Model', 'Bedtype_Model', 'Bed_Model', 'prescription_model', 'operationtheatre_model', 'pharmacy_model', 'medicine_category_model', 'lab_model', 'pathology_category_model', 'pathology_model', 'blooddonor_model', 'blood_donorcycle_model', 'bloodissue_model', 'bloodbankstatus_model', 'charge_category_model', 'charge_model', 'Organisation_model', 'Tpa_model', 'vehicle_model', 'appointment_model', 'radio_model', 'floor_model', 'bed_model', 'bedgroup_model');
+

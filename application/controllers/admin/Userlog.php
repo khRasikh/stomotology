@@ -42,10 +42,15 @@ class Userlog extends Admin_Controller {
 
             $search_table = "userlog";
             $search_column = "login_datetime";
+             // Get the current page number from the URL
+    $page = ($this->uri->segment(4)) ? $this->uri->segment(4) : 0;
+    // Define results per page
+    $limit = 100; // Customize this as per your requirement
+    $offset = $page;
 
-            $resultlist = $this->report_model->searchReport($select, $join, $table_name, $search_type, $search_table, $search_column);
-            $stafflist = $this->report_model->searchReport($select, $join, $table_name, $search_type, $search_table, $search_column, $additional);
-            $patientlist = $this->report_model->searchReport($select, $join, $table_name, $search_type, $search_table, $search_column, $additional_where);
+            $resultlist = $this->report_model->searchReport($select, $join, $table_name, $search_type, $search_table, $search_column, $limit, $offset);
+            $stafflist = $this->report_model->searchReport($select, $join, $table_name, $search_type, $search_table, $search_column,  $limit, $offset, $additional);
+            $patientlist = $this->report_model->searchReport($select, $join, $table_name, $search_type, $search_table, $search_column,  $limit, $offset, $additional_where);
         }
         $data['userlogList'] = $resultlist;
         $data['userlogStaffList'] = $stafflist;

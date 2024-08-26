@@ -3,6 +3,8 @@ $this->load->helper('menu_helper');
 $currency_symbol = $this->customlib->getSchoolCurrencyFormat();
 $genderList = $this->customlib->getGender();
 ?>
+<?php echo $pagination; ?>
+
 <style type="text/css">
 
     #easySelectable {/*display: flex; flex-wrap: wrap;*/}
@@ -14,46 +16,106 @@ $genderList = $this->customlib->getGender();
     font-size: 18px !important;
     font-family: Consolas, Monaco, Courier New, Courier, monospace;
 }
+
+
+/* Ensure pagination is RTL */
+.pagination {
+    direction: rtl;
+    display: flex;
+    justify-content: flex-start; /* Start pagination from the right */
+}
+
+.pagination li {
+    margin: 0 3px;
+}
+
+.pagination li a, .pagination li span {
+    display: inline-block;
+    padding: 2px 4px;
+    text-decoration: none;
+    background-color: #f8f9fa;
+}
+
+.pagination li.active span {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.record-pagination-container {
+    display: flex;
+    justify-content: space-between; /* Distribute space between the two elements */
+    align-items: center; /* Align vertically centered */
+    color: #007bff
+}
+
+.record-pagination-container-one {
+    display: flex;
+    justify-content: space-between; /* Distribute space between the two elements */
+    align-items: center; /* Align vertically centered */
+    margin-left: 19px;
+}
+
+.content-wrapper{
+    margin-top: -80px;
+}
+.custom-thead th {
+        background-color: lightblue !important; /* Dark background */
+        font-weight: bold;         /* Bold text */
+        padding: 8px 12px;         /* Padding for spacing */
+        text-align: center;        /* Center the text */
+        border: 1px solid #dee2e6; /* Border for cell separation */
+        white-space: nowrap;       /* Prevent text wrapping */
+        overflow: hidden ;          /* Hide overflow if text is too long */
+        text-overflow: ellipsis;   /* Add ellipsis for long text */
+    }
+    .custom-tbody tr {
+    padding: 8px 12px;         /* Padding for spacing */
+    text-align: center;        /* Center the text */
+    border: 1px solid #dee2e6; /* Border for cell separation */
+    white-space: nowrap;       /* Prevent text wrapping */
+    overflow: hidden !important;          /* Hide overflow if text is too long */
+    text-overflow: hidden;   /* Add ellipsis for long text */
+}
+.address-td{
+    width: 150px;
+    overflow-x: scroll !important;
+
+}
 </style> 
 <div class="content-wrapper">
     <!-- Main content -->
     <section class="content">
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-primary">
-                    <div class="box-header with-border">
+                <div class=" box box-primary">
+                    <div class="box-header with-border ">
                         <?php if ($title == 'old_patient') { ?>
                                 <h3 class="box-title titlefix"><?php echo $this->lang->line('opd') . " " . $this->lang->line('old') . " " . $this->lang->line('patient') ?></h3>
                         <?php } else { ?>
                                 <h3 class="box-title titlefix">لیست داکتران مراجعه کننده</h3>
 
                         <?php } ?>
-                        <div class="box-tools pull-right">
-                                <a  href="<?php echo base_url('admin/patient/getAllDoctors') ?>" class="btn btn-success btn-sm"><i class="fa fa-list">&nbsp; </i>لیست مجموعی داکتران </a> 
-                            <?php if ($this->rbac->hasPrivilege($title, 'can_add')) { ?>   
-                                    <a  id="add" href="<?php echo base_url('admin/patient/createPatient') ?>" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>  <?php echo $this->lang->line('add') . " داکتر" ?></a> 
-
-                            <?php } ?> 
-
-                        </div>    
+                           
                     </div><!-- /.box-header -->
 
+                    
                     <?php
                     if (isset($resultlist)) {
                         ?>
-                            <div class="box-body">
-                                <div class="download_label"><?php if ($title == 'old_patient') {
-                                    echo $this->lang->line('opd') . " " . $this->lang->line('old') . " " . $this->lang->line('patient')
-                                        ?>
-                                    <?php } else {
-                                    echo $this->lang->line('opd') . " " . $this->lang->line('patient')
-                                        ?>
-
-        <?php } ?></div>
-                                <table class="table table-striped table-bordered table-hover example" cellspacing="0" width="100%">
-                                    <thead>
+                        <div class="box-body table-responsive">
+                        <div class="buttons" style="margin: 10px">
+                        <!-- <a  href="<?php echo base_url('admin/patient/getAllDoctors') ?>" class="btn btn-success btn-sm"><i class="fa fa-list">&nbsp; </i>لیست مجموعی داکتران </a>  -->
+                       
+                            <?php if ($this->rbac->hasPrivilege($title, 'can_add')) { ?>  
+                                    <a  id="add" href="<?php echo base_url('admin/patient/createPatient') ?>" class="btn btn-primary btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-plus"></i>  <?php echo $this->lang->line('add') . " داکتر" ?></a> 
+                                    <a  href="<?php echo base_url('admin/patient/opd_report') ?>" class="btn btn-success btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-list">&nbsp; </i> عواید</a> 
+                                    <a  href="<?php echo base_url('admin/patient/teethlist') ?>" class="btn btn-warning btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-list">&nbsp; </i> مصارف</a> 
+                            <?php } ?> 
+                        </div> 
+                                <table class="table table-bordered border-primary table-hover custom-table">
+                                    <thead class="custom-thead">
                                         <tr>
-                                            <th style="width:50px important;">آی دی</th>
+                                            <th>آی دی</th>
                                             <th>نام و تخلص</th>
                                             <th>سن</th>
                                             <th>حالت جنسی</th>
@@ -63,10 +125,10 @@ $genderList = $this->customlib->getGender();
                                             <th>  آخرین رسید</th>
                                             <th>دوره ها</th>
                                             <th>باقیات</th>
-                                            <th style="width:110px; text-align: center;">ملاحظات</th>
+                                            <th >ملاحظات</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody class="custom-tbody">
                                         <?php
                                         // print_r($resultlist); die();
                                         if (!empty($resultlist)) {
@@ -76,16 +138,15 @@ $genderList = $this->customlib->getGender();
                                                 $paid = get_last_amount($student['id']);
                                                 $alarm = $paid;
                                                 ?>
-                                                <tr class="">
+                                                <tr>
                                                     <td><?php echo $student["hmis_no"] ?></td>
                                                     <td>
-                                                        <a href="<?php echo base_url(); ?>admin/patient/profile/<?php echo $student['id']; ?>"><?php echo $student['patient_name']; ?>             <?php echo $student['guardian_name']; ?>
+                                                        <a  href="<?php echo base_url(); ?>admin/patient/profile/<?php echo $student['id']; ?>"><?php echo $student['patient_name']; ?>             <?php echo $student['guardian_name']; ?>
                                                         </a>
                                                     </td>
                                                     <td><?php echo $student['age']; ?> سال </td> 
                                                     <td><?php echo $student['gender']; ?></td> 
-                                                    <td><?php echo $student['province']; ?>, <?php echo $student['district']; ?>, 
-                                                    <?php echo $student['address']; ?> </td> 
+                                                    <td><div class="address-td"><?php echo $student['province']; ?>، <?php echo $student['district']; ?>، <?php echo $student['address']; ?></div> </td> 
                                                     <td><?php echo $student['day']; ?>-<?php echo $student['month']; ?>-<?php echo $student['dob']; ?> </td>
                                                     <td><?php echo get_last_amount($student['id']); ?></td>
                                                     <td align="center" ><?php echo $student['total_visit'] - 1; ?> 
@@ -135,8 +196,19 @@ $genderList = $this->customlib->getGender();
                                         ?>
                                     </tbody>
                                 </table>
+                                 <!-- Pagination Links -->
+                                <!-- Display record count -->
+                                <div class="record-pagination-container-one">
+                                    <div>
+                                        <?php echo $pagination; ?>
+                                    </div>
+                                    <div>
+                                        <?php echo "ثبت {$start_record} الی {$end_record} از مجموع {$total_records} داکتران"; ?>
+                                    </div>
+                                </div>
                             </div>
-        <?php
+                        </div>
+                    <?php
                     }
                     ?>
                 </div>  

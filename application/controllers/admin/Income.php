@@ -406,7 +406,12 @@ $this->load->view('admin/income/editModal', $data);
         $join =  $parameter[$key]['join'];
         $table_name = $parameter[$key]['table'];
 
+ // Get the current page number from the URL
+ $page = ($this->uri->segment(4)) ? $this->uri->segment(4) : 0;
 
+ // Define results per page
+ $limit = 10; // Customize this as per your requirement
+ $offset = $page;
 
          if(empty($search_type)){
 
@@ -419,7 +424,7 @@ $this->load->view('admin/income/editModal', $data);
         $search_column =  $parameter[$key]['search_column'];
          $additional  = array();
          $additional_where  = array();
-        $resultList = $this->report_model->searchReport($select,$join,$table_name,$search_type,$search_table,$search_column);
+        $resultList = $this->report_model->searchReport($select,$join,$table_name,$search_type,$search_table,$search_column,$limit, $offset);
       
       }
     
@@ -445,7 +450,7 @@ $this->load->view('admin/income/editModal', $data);
                           'JOIN patients ON ipd_details.patient_id = patients.id',
                           'JOIN payment ON payment.patient_id = patients.id',
                           'JOIN ipd_billing ON ipd_billing.patient_id = patients.id',
-                         ),$table_name='ipd_details',$search_type,$search_table='ipd_billing',$search_column='date');
+                         ),$table_name='ipd_details',$search_type,$search_table='ipd_billing',$search_column='date',$limit, $offset);
  
  //  $one = array('label' =>'IPD' );
 if(!empty($resultList2)){

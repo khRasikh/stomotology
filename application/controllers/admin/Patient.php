@@ -22,14 +22,16 @@ class patient extends Admin_Controller
     $data["charge_type"] = $this->charge_type;
     $this->patient_login_prefix = "pat";
   }
-  public function reg_search()
-  {
 
+  public function reg_search()
+{
     if (!$this->rbac->hasPrivilege('consultant register', 'can_add')) {
-      access_denied();
+        access_denied();
     }
-    $data["title"] = 'consultant register';
-    $this->session->set_userdata('top_menu', 'consultant register');
+
+    $data["title"] = 'Consultant Register';
+    $this->session->set_userdata('top_menu', 'Consultant Register');
+
     $setting = $this->setting_model->get();
     $data['setting'] = $setting;
     $opd_month = $setting[0]['opd_record_month'];
@@ -38,28 +40,59 @@ class patient extends Admin_Controller
     $data["bloodgroup"] = $this->blood_group;
     $doctors = $this->staff_model->getStaffbyrole(3);
     $data["doctors"] = $doctors;
-    $resultlist = $this->patient_model->searchByMonth();
     $data['organisation'] = $this->Organisation_model->get();
-    $i = 0;
-    // print_r($resultlist);
-    // die();
-    foreach ($resultlist as $visits) {
-      $patient_id = $visits["id"];
-      $myPatient_id = $visits['patient_id'];
-      $total_visit = $this->patient_model->totalVisit($patient_id);
-      $last_visit = $this->patient_model->lastVisit($patient_id);
-      $resultlist[$i]["total_visit"] = $total_visit["total_visit"];
-      $resultlist[$i]["last_visit"] = $last_visit["last_visit"];
-      $i++;
+
+    // Get the search text from POST if it exists
+    $search_text = $this->input->post('search_text');
+
+    // If search text is provided, count rows based on the search query
+    if (!empty($search_text)) {
+        $total_rows = $this->patient_model->countSearchPatients($search_text);
+    } else {
+        // If no search text, count total rows as usual
+        $total_rows = $this->patient_model->countPatients();
     }
-    $data['resultlist1'] = $this->patient_model->searchByMonth_forExShow($opd_month, '');
-    $data['labconf'] = $this->patient_model->getLabConf();
+
+    $base_url = site_url('admin/patient/reg_search');
+    $pagination = configure_pagination($base_url, $total_rows);
+
+    $page = ($this->uri->segment(4)) ? $this->uri->segment(4) : 0;
+
+    // Fetch paginated data depending on whether a search is being performed
+    if (!empty($search_text)) {
+        $resultlist = $this->patient_model->searchPatients($search_text, $pagination->per_page, $page);
+    } else {
+        $resultlist = $this->patient_model->searchByMonth($pagination->per_page, $page);
+    }
+
+    $start_record = $page + 1;
+    $end_record = min($page + $pagination->per_page, $total_rows);
+
+    // Add total visit and last visit details to the result list
+    $i = 0;
+    foreach ($resultlist as $visits) {
+        $patient_id = $visits["id"];
+        $total_visit = $this->patient_model->totalVisit($patient_id);
+        $last_visit = $this->patient_model->lastVisit($patient_id);
+        $resultlist[$i]["total_visit"] = $total_visit["total_visit"];
+        $resultlist[$i]["last_visit"] = $last_visit["last_visit"];
+        $i++;
+    }
+
+    // Pass data to the view
     $data["resultlist"] = $resultlist;
-    
+    $data["pagination"] = $pagination->create_links();
+    $data["start_record"] = $start_record;
+    $data["end_record"] = $end_record;
+    $data["total_records"] = $total_rows;
+    $data['labconf'] = $this->patient_model->getLabConf();
+
+    // Load views
     $this->load->view('layout/header');
-    $this->load->view('admin/patient/reg_search.php', $data);
+    $this->load->view('admin/patient/reg_search', $data);
     $this->load->view('layout/footer');
-  }
+}
+
 
 
   public function getAllDoctors()
@@ -195,6 +228,7 @@ class patient extends Admin_Controller
         'dob' => $this->input->post('year'),
         'month' => $this->input->post('month'),
         'day' => $this->input->post('day'),
+        'updated_at' => date('Y-m-d H:i:s') 
       );
       $this->patient_model->add($patient_data);
 
@@ -854,6 +888,7 @@ class patient extends Admin_Controller
     $arrayName = array(
       'id' => $this->input->post('ex_id'),
       'is_examined' => 1,
+      'updated_at' => date('Y-m-d H:i:s') 
     );
     $this->patient_model->add($arrayName);
     redirect('admin/patient/reg_search');
@@ -1763,51 +1798,90 @@ class patient extends Admin_Controller
     echo json_encode($patient_charge);
   }
   public function opd_report()
-  {
+{
     if (!$this->rbac->hasPrivilege('opd_patient', 'can_view')) {
-      access_denied();
+        access_denied();
     }
 
     $this->session->set_userdata('top_menu', 'Reports');
     $this->session->set_userdata('sub_menu', 'admin/patient/opd_report');
-    $this->session->set_userdata('top_menu', 'Reports');
-    $select = 'opd_details.*,staff.name,staff.surname,patients.id as pid,patients.patient_name,
-    patients.patient_unique_id,patients.guardian_name,patients.address,patients.admission_date,
-    patients.gender,patients.mobileno,patients.age';
+
+    $select = 'opd_details.*, staff.name, staff.surname, patients.id as pid, patients.patient_name, 
+               patients.patient_unique_id, patients.guardian_name, patients.address, patients.admission_date, 
+               patients.gender, patients.mobileno, patients.age';
     $join = array(
-      'JOIN staff ON opd_details.cons_doctor = staff.id',
-      'JOIN patients ON opd_details.patient_id = patients.id'
+        'JOIN staff ON opd_details.cons_doctor = staff.id',
+        'JOIN patients ON opd_details.patient_id = patients.id'
     );
-
     $table_name = "opd_details";
-    //$this->form_validation->set_rules('search_type', 'Search Type', 'trim|required|xss_clean');
+    $search_type = $this->input->post("search_type") ? $this->input->post("search_type") : "all_time";
 
-    $search_type = $this->input->post("search_type");
-    if (isset($search_type)) {
-      $search_type = $this->input->post("search_type");
-    } else {
-      $search_type = "this_month";
-    }
-    //if ($this->form_validation->run() == FALSE) {
-    if (empty($search_type)) {
+    // Get the current page number from the URL
+    $page = ($this->uri->segment(4)) ? $this->uri->segment(4) : 0;
 
-      $search_type = "";
-      $resultlist = $this->report_model->getReport($select, $join, $table_name);
-    } else {
+    // Define results per page
+    $limit = 50; // Customize this as per your requirement
+    $offset = $page;
 
-      $search_table = "opd_details";
-      $search_column = "appointment_date";
-      $resultlist = $this->report_model->searchReport($select, $join, $table_name, $search_type, $search_table, $search_column);
-    }
+    // Fetch the total record count
+    $results = $this->report_model->countSearchReport($select, $join, $table_name, $search_type, 'opd_details', 'appointment_date');
+     
 
+    $total_rows = $results['total_count'];
+    $total_amount = $results['total_amount'];
+ 
+    // Set up pagination
+    $base_url = site_url('admin/patient/opd_report');
+    $pagination = configure_pagination($base_url, $total_rows, $limit);
+
+    // Fetch paginated data
+    $resultlist = $this->report_model->searchReport($select, $join, $table_name, $search_type, 'opd_details', 'appointment_date', $limit, $offset);
+
+    // Calculate start and end records for the current page
+    $start_record = $offset + 1;
+    $end_record = min($offset + $limit, $total_rows);
+
+    // Pass data to the view
     $data["searchlist"] = $this->search_type;
     $data["search_type"] = $search_type;
     $data["resultlist"] = $resultlist;
+    $data["pagination"] = $pagination->create_links();
+    $data["start_record"] = $start_record;
+    $data["end_record"] = $end_record;
+    $data["total_records"] = $total_rows;
+    $data["total_amount"] = $total_amount;
 
+    // Load views
     $this->load->view('layout/header');
     $this->load->view('admin/patient/opdReport.php', $data);
     $this->load->view('layout/footer');
-  }
+}
+public function get_opd_report_data()
+{
+    if (!$this->rbac->hasPrivilege('opd_patient', 'can_view')) {
+        access_denied();
+    }
+
+    $search_type = $this->input->post("search_type") ? $this->input->post("search_type") : "all_time";
+
+    // Continue with your query and model call
+    $select = 'opd_details.*, staff.name, staff.surname, patients.id as pid, patients.patient_name, 
+               patients.patient_unique_id, patients.guardian_name, patients.address, patients.admission_date, 
+               patients.gender, patients.mobileno, patients.age';
+    $join = array(
+        'JOIN staff ON opd_details.cons_doctor = staff.id',
+        'JOIN patients ON opd_details.patient_id = patients.id'
+    );
+    $table_name = "opd_details";
+
+    // Call the report model with the search_type parameter
+    $resultlist = $this->report_model->searchReport($select, $join, $table_name, $search_type, 'opd_details', 'appointment_date', 1000000, 0);
+
+    // Return data as JSON
+    echo json_encode($resultlist);
+}
+
+
   public function ipdReport()
   {
     if (!$this->rbac->hasPrivilege('ipd_patinet', 'can_view')) {
