@@ -39,11 +39,6 @@
                                         <i class="fas fa-group"></i> <span>لیست داکتران متفرقه </span>
                                        </a>
                                      </li>
-                                     
-                                     <li class="<?php echo set_Submenu('admin/patient/teethlist'); ?>"> <a href="<?php echo base_url();?>admin/patient/teethlist">
-                                        <i class="fas fa-list"></i> <span>ساخت دندانها </span>
-                                       </a>
-                                     </li>
 
                                      <li class="<?php echo set_Submenu('admin/patient/reg_search'); ?>"> <a href="<?php echo base_url();?>admin/patient/createPatient">
                                      
@@ -225,7 +220,7 @@
 
                                <li class="treeview <?php echo set_Topmenu('HR');?>">
                                     <a href="<?php echo base_url(); ?>admin/staff">
-                                      <i class="fas fa-sitemap"></i> <span><?php echo $this->lang->line('human_resource'); ?></span>
+                                      <i class="fas fa-sitemap"></i> <span>کارمندان</span>
                                     </a>
 
                                 </li> 
@@ -302,8 +297,13 @@
                                         if ($this->rbac->hasPrivilege('opd_report', 'can_view')) {
                                             ?>
                                             <li class="<?php echo set_Submenu('admin/patient/opd_report'); ?>"><a href="<?php echo base_url(); ?>admin/patient/opd_report"><i class="fas fa-angle-right"></i>عواید</a></li>
-                                            <?php
-                                        } }
+                                            <li class="<?php echo set_Submenu('admin/patient/teethlist'); ?>"> <a href="<?php echo base_url();?>admin/patient/teethlist">
+                                            <i class="fas fa-angle-right"></i>مصارف</a></a></li>
+                                          <?php
+
+                                      } }
+
+                                       
 
                                           if ($this->module_lib->hasActive('IPD')) {
                                         if ($this->rbac->hasPrivilege('ipd_report', 'can_view')) {
