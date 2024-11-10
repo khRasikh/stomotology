@@ -175,6 +175,26 @@ public function countSearchPatients($search_text)
     return $this->db->count_all_results();
 }
 
+//fetch all patients without pagination
+public function searchPatientsWithoutPagination()
+    {
+        $this->db->select('patients.*, opd_details.appointment_date, opd_details.case_type,
+            opd_details.patient_id, staff.name as sname, staff.surname')
+            ->from('patients');
+        $this->db->join('opd_details', 'patients.id = opd_details.patient_id', "inner");
+        $this->db->join('staff', 'staff.id = patients.payment', "inner");
+        $this->db->where('patients.is_active', 'yes');
+        $this->db->where('patients.patient_type', 'permanent');
+ 
+        // Order and pagination
+        $this->db->order_by('patients.updated_at', 'desc');
+        $this->db->order_by('patients.created_at', 'desc');
+        $this->db->group_by('opd_details.patient_id');
+
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
 // Fetch patients based on search term with pagination
     public function searchPatients($search_text, $limit, $offset)
     {
@@ -379,6 +399,18 @@ public function countSearchPatients($search_text)
             ->get('opd_details');
 
         return $query->row_array();
+    }
+
+    function get_amount_calculation_for_excel($pid) {
+        $CI = & get_instance();
+        $query = $CI->db->query("SELECT sum(fees) from lab_lab where patient_id='$pid'");
+        return $query->result_array()[0]['sum(fees)'];
+    }
+    function get_last_amount_for_excel($pid){
+        $CI = & get_instance();
+        $query = $CI->db->query("SELECT sum(amount) from opd_details where patient_id='$pid'");
+        // $query = $CI->db->query("SELECT sum(amount) from opd_details where patient_id='$pid'");
+        return $query->result_array()[0]['sum(amount)'];
     }
     public function getPermanentPatientTotal()
     {

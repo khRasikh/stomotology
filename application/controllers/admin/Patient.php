@@ -1856,6 +1856,74 @@ class patient extends Admin_Controller
     $this->load->view('admin/patient/opdReport.php', $data);
     $this->load->view('layout/footer');
 }
+public function get_reg_search_all()
+{
+    if (!$this->rbac->hasPrivilege('consultant register', 'can_add')) {
+      access_denied();
+  }
+
+  $data["title"] = 'Consultant Register';
+  $this->session->set_userdata('top_menu', 'Consultant Register');
+
+  $setting = $this->setting_model->get();
+  $data['setting'] = $setting;
+  $opd_month = $setting[0]['opd_record_month'];
+  $data["marital_status"] = $this->marital_status;
+  $data["payment_mode"] = $this->payment_mode;
+  $data["bloodgroup"] = $this->blood_group;
+  $doctors = $this->staff_model->getStaffbyrole(3);
+  $data["doctors"] = $doctors;
+  $data['organisation'] = $this->Organisation_model->get();
+
+  // Get the search text from POST if it exists
+  $search_text = $this->input->post('search_text');
+
+  // If search text is provided, count rows based on the search query
+  if (!empty($search_text)) {
+      $total_rows = $this->patient_model->countSearchPatients($search_text);
+  } else {
+      // If no search text, count total rows as usual
+      $total_rows = $this->patient_model->countPatients();
+  }
+
+  $base_url = site_url('admin/patient/reg_search');
+  $pagination = configure_pagination($base_url, $total_rows);
+
+  $page = ($this->uri->segment(4)) ? $this->uri->segment(4) : 0;
+
+  // Fetch paginated data depending on whether a search is being performed
+  $resultlist = $this->patient_model->searchPatientsWithoutPagination();
+
+  $start_record = $page + 1;
+  $end_record = min($page + $pagination->per_page, $total_rows);
+
+  // Add total visit and last visit details to the result list
+  $i = 0;
+  foreach ($resultlist as $visits) {
+      $patient_id = $visits["id"];
+      $total_visit = $this->patient_model->totalVisit($patient_id);
+      $last_visit = $this->patient_model->lastVisit($patient_id); 
+      $amount_calculation = $this->patient_model->get_amount_calculation_for_excel($visits['patient_id']); 
+      $last_amount_calculation = $this->patient_model->get_last_amount_for_excel($visits['patient_id']); 
+
+      $resultlist[$i]["total_visit"] = $total_visit["total_visit"];
+      $resultlist[$i]["last_visit"] = $last_visit["last_visit"];
+      $resultlist[$i]["total_amount"] = $amount_calculation;
+      $resultlist[$i]["last_amount_test"] = $last_amount_calculation;
+      $i++;
+  }
+
+  // Pass data to the view
+  $data["resultlist"] = $resultlist;
+  $data["pagination"] = $pagination->create_links();
+  $data["start_record"] = $start_record;
+  $data["end_record"] = $end_record;
+  $data["total_records"] = $total_rows;
+  $data['labconf'] = $this->patient_model->getLabConf();
+   // Return data as JSON
+   echo json_encode($resultlist);
+}
+
 public function get_opd_report_data()
 {
     if (!$this->rbac->hasPrivilege('opd_patient', 'can_view')) {

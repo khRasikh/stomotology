@@ -5,6 +5,10 @@ $genderList = $this->customlib->getGender();
 ?>
 <?php echo $pagination; ?>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/2.5.1/jspdf.plugin.autotable.min.js"></script>  
+
 <style type="text/css">
 
     #easySelectable {/*display: flex; flex-wrap: wrap;*/}
@@ -110,6 +114,9 @@ $genderList = $this->customlib->getGender();
                                     <a  id="add" href="<?php echo base_url('admin/patient/createPatient') ?>" class="btn btn-primary btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-plus"></i>  <?php echo $this->lang->line('add') . " داکتر" ?></a> 
                                     <a  href="<?php echo base_url('admin/patient/opd_report') ?>" class="btn btn-success btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-list">&nbsp; </i> عواید</a> 
                                     <a  href="<?php echo base_url('admin/patient/teethlist') ?>" class="btn btn-warning btn-md" style="margin-bottom: 10px; border-radius: 8px;"><i class="fa fa-list">&nbsp; </i> مصارف</a> 
+                                    <button type="button" class="btn btn-success btn-md" style="margin-bottom: 10px; border-radius: 8px; margin-right: 10px" onclick="exportToExcel(this)">
+                                    <i class="fa fa-list">&nbsp; </i>دانلود به اکسل
+                                </button>
                             <?php } ?> 
                         </div> 
                                 <table class="table table-bordered border-primary table-hover custom-table">
@@ -1219,5 +1226,95 @@ foreach ($bloodgroup as $key => $value) {
             //    console.log("hello Dear Rasikh");
             }
 
+  function exportToExcel(button) {
+    button.disabled = true
+    button.innerHTML = "درحال جستجو...";  
+    $.ajax({
+        url: '<?php echo base_url("admin/patient/get_reg_search_all"); ?>',  // Your server-side method URL
+        type: 'POST',  // Changed to POST since we are sending data
+        dataType: 'json',
+        success: function(data) {
+            if (data) {
+                generateExcel(data);
+            } else {
+                console.error('No data received from the server');
+            } 
+            button.disabled = false;
+            button.innerHTML = "دانلود به اکسل";  // Reset button text
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX request failed:', status, error);
+            console.error('Response:', xhr.responseText); 
+            button.disabled = false;
+            button.innerHTML = "دانلود به اکسل";  // Reset button text
+        } 
+    });
+}
+
+function generateExcel(data) {
+    if (!data || !Array.isArray(data)) {
+        console.error('Data is undefined, null, or not in the correct format.');
+        return;
+    }
+
+    const propertyMapping = { 
+        'id': 'آی دی',
+        'full_name': 'نام و تخلص',
+        'age': 'سن',
+        'gender': 'حالت جنسی',
+        'address': 'آدرس',
+        'visit_date': 'تاریخ مراجعه',
+        'last_receipt': 'آخرین رسید',
+        'sessions': 'دوره ها',
+        'balance': 'باقیات-افغانی',
+        'mobileno': 'شماره تماس',
+        'notes': 'ملاحظات',
+    };
+    const transformedData = data.map(student => {
+        const shouldPay = student['total_amount'];
+        const paid = student['last_amount_test'];
+        const balanceAmount = shouldPay - paid;
         
+        const notes = (() => {
+        switch (true) {
+            case balanceAmount >= 20000:
+                return `باقی-اخطاریه`;  
+            case balanceAmount === 0:
+                return 'تصفیه شده';
+            case balanceAmount < 0:
+                return `طلبکار`;  
+            default:
+                return 'باقی'
+        }
+       })();
+
+        return {
+            [propertyMapping['id']]: student['hmis_no'] || '',
+            [propertyMapping['full_name']]: `${student['patient_name']} ${student['guardian_name']}`.trim(),
+            [propertyMapping['age']]: `${student['age']} سال`,
+            [propertyMapping['gender']]: student['gender'] || '',
+            [propertyMapping['address']]: `${student['province']}، ${student['district']}، ${student['address']}`.trim(),
+            [propertyMapping['visit_date']]: `${student['day']}-${student['month']}-${student['dob']}`,
+            [propertyMapping['last_receipt']]: paid,
+            [propertyMapping['sessions']]: student['total_visit'] - 1,
+            [propertyMapping['balance']]:  balanceAmount,
+            [propertyMapping['mobileno']]: student['mobileno'],
+            [propertyMapping['notes']]: notes
+        };
+    });
+
+    // Create the Excel file
+    const filename = 'لیست مراجعین داکتران.xlsx';
+    const headers = Object.values(propertyMapping);
+
+    const worksheet = XLSX.utils.json_to_sheet(transformedData, { header: headers });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'لیست مراجعین داکتران');
+
+    // Write the file
+    XLSX.writeFile(workbook, filename);
+}
+
+
 </script>
+
